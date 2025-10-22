@@ -36,7 +36,7 @@ substitutions:
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
 
   clock_type: "default_clock" # (options are: default_clock, flip_clock, clock_7segment)
-  clock_background_image: "hacker" # (options are: clock, hacker, starrysky)
+  clock_background_image: "hacker" # (options are: clock, Foundation, hacker, starrysky)
 
   display_model: "JC3636W518" # (JC3636W518 for v1, JC3636W518V2 for v2)
   pdm_mic_type: "false" # (False for v1, true for v2)

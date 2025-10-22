@@ -10,7 +10,7 @@ substitutions:
   rotate_display: "180"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
-  clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
+  clock_background_image: "clock" # (options are: clock, Foundation, hacker, ha-girl, mission, starrysky)
   imagemodel: "Gwen" # options are:
 
 # Alita, Alfred, Astrobot, BMO, Buzz, Casita, Cleon, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,

@@ -14,7 +14,7 @@ substitutions:
   imageheight: "172"
 
   startup_sound: "Home_Connected" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready)
-  clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
+  clock_background_image: "clock" # (options are: clock, Foundation, hacker, ha-girl, mission, starrysky)
   imagemodel: "Sarah" # options are: Sarah
 
 ## PRESENCE / MOTION SENSORS ########## IF NOT USING THESE LEAVE THEM ALONE, SCRIPT WILL BREAK WITHOUT ###########################################

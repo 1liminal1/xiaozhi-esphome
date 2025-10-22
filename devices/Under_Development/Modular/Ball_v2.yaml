@@ -9,7 +9,7 @@ substitutions:
   imageheight: "240"
   rotate_display: "0"
   startup_sound: "videogames" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready, videogames)
-  clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
+  clock_background_image: "clock" # (options are: clock, Foundation, hacker, ha-girl, mission, starrysky)
   imagemodel: "BMO" # options are:
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
 # Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun

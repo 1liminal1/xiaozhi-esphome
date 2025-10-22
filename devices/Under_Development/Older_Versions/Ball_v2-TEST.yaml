@@ -31,7 +31,7 @@ substitutions:
 ## SETTINGS ######################################################################################################################################
 
   startup_sound: "Home_Connected_Male" # (options are: available, Home_ Connected, Home_ Connected_Male, Computer_Ready)
-  clock_background_image: "mission" # (options are: clock, hacker, ha-girl, mission, starrysky)
+  clock_background_image: "mission" # (options are: clock, Foundation, hacker, ha-girl, mission, starrysky)
   imagemodel: "Alita" # options are:
 
 # Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
