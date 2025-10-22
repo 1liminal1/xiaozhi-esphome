@@ -14,8 +14,8 @@ substitutions:
   clock_background_image: "clock" # (options are: clock, hacker, ha-girl, mission, starrysky)
   imagemodel: "Gwen" # options are:
 
-# Alita, Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
-# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+# Alita, Alfred, Astrobot, BMO, Buzz, Casita, Cleon, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, ha-girl, Hacker, Harley,
+# Jarvis, Luffy, Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Sarah, Shaun
 ##################################################################################################################################################
 
   font_glyphsets: "GF_Latin_Core"

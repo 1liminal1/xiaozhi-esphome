@@ -18,8 +18,8 @@ substitutions:
   imagemodel: "Gwen" # options are:
 
 ##################################################################################################################################################
-# Alfred, Astrobot, Buzz, Casita, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Harley, Jarvis, Luffy,
-# Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Shaun
+# Alfred, Astrobot, BMO, Buzz, Casita, Cleon, Cybergirl, Dory, EVE, Eyes, Eyes2, GLaDOS, Girl1, Guy1, Guy2, Gwen, HA-character, Harley, Jarvis, Luffy,
+# Mario, Max, Prime, Robochibi, Robocop, Robot, Robotgirl, Sarah, Shaun
 ##################################################################################################################################################
 
   startup_sound: "Home_Connected" # (options are: available,Home_Connected,Computer_Ready)

@@ -12,7 +12,7 @@ substitutions:
 
 #####SETTINGS:####################################################################################################################################
 
-  imagemodel: "Eyes2" # (options are: Alfred,Astrobot,Buzz,Casita,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Shaun)
+  imagemodel: "Eyes2" # (options are: Alfred,Astrobot,BMO,Buzz,Casita,Cleon,Cybergirl,Dory,EVE,Eyes,Eyes2,GLaDOS,Girl1,Guy1,Guy2,Gwen,Harley,Jarvis,Luffy,Mario,Max,Prime,Robochibi,Robocop,Robot,Robotgirl,Sarah,Shaun)
   startup_sound: "Home_Connected" # (options are: available,Home_Connected)
 
   imagewidth: "240" # ILI9341 (breadboard 2.4") "240" or GC9A01A (Ball v1) "240" or ST7789V (Xingzhi Cube) "240"
