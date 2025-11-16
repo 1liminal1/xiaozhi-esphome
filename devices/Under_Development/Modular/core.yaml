@@ -427,8 +427,6 @@ light:
 micro_wake_word:
   id: mww
   vad:
-    model: github://esphome/micro-wake-word-models/models/v2/vad.json
-    probability_cutoff: 0.5
   models:
     - model: ${wake_word_model_url}
       probability_cutoff: ${wake_word_probability}
