@@ -31,6 +31,11 @@ substitutions:
   voice_assist_muted_phase_id: "12"
   voice_assist_timer_finished_phase_id: "20"
 
+  # Wake word configuration defaults (override in device YAML)
+  wake_word_sliding_window_size: "10"
+  vad_model_url: "github://esphome/micro-wake-word-models/models/v2/vad.json@main"
+  vad_probability_cutoff: "0.60"
+
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
@@ -426,10 +431,13 @@ light:
 
 micro_wake_word:
   id: mww
-  vad:
   models:
     - model: ${wake_word_model_url}
       probability_cutoff: ${wake_word_probability}
+      sliding_window_size: ${wake_word_sliding_window_size}
+  vad:
+    model: ${vad_model_url}
+    probability_cutoff: ${vad_probability_cutoff}
   on_wake_word_detected:
     - script.execute: reset_screensaver
     - if:
