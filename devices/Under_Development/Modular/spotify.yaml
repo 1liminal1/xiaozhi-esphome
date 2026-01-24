@@ -101,11 +101,11 @@ font:
 
 color:
   - id: spotify_green
-    hex: "1ED760"
+    hex: "268bd2"  # Solarized blue accent (was Spotify green 1ED760)
   - id: spotify_dark
-    hex: "121212"
+    hex: "073642"  # Solarized teal background (was black 121212)
   - id: spotify_grey
-    hex: "B3B3B3"
+    hex: "93a1a1"  # Solarized primary text (was grey B3B3B3)
 
 globals:
   - id: show_spotify_page
