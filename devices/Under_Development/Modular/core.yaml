@@ -15,12 +15,18 @@ substitutions:
   clock_background_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
   startup_sound_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
-  loading_illustration_background_color: "000000"
-  idle_illustration_background_color: "000000"
-  listening_illustration_background_color: "000000"
-  thinking_illustration_background_color: "000000"
-  replying_illustration_background_color: "000000"
-  error_illustration_background_color: "000000"
+  # Background colors - Solarized theme (override in device YAML)
+  loading_illustration_background_color: "073642"
+  idle_illustration_background_color: "073642"
+  listening_illustration_background_color: "073642"
+  thinking_illustration_background_color: "073642"
+  replying_illustration_background_color: "073642"
+  error_illustration_background_color: "073642"
+
+  # Timer and accent colors - Solarized theme (override in device YAML)
+  active_timer_color: "859900"     # Solarized green
+  paused_timer_color: "268bd2"     # Solarized blue
+  seconds_dot_color: "268bd2"      # Solarized blue
 
   voice_assist_idle_phase_id: "1"
   voice_assist_listening_phase_id: "2"
@@ -1582,7 +1588,7 @@ text_sensor:
 
 color:
   - id: idle_color
-    hex: ${loading_illustration_background_color}
+    hex: ${idle_illustration_background_color}
   - id: listening_color
     hex: ${listening_illustration_background_color}
   - id: thinking_color
@@ -1594,8 +1600,8 @@ color:
   - id: error_color
     hex: ${error_illustration_background_color}
   - id: active_timer_color
-    hex: "26ed3a"
+    hex: ${active_timer_color}
   - id: paused_timer_color
-    hex: "3b89e3"
+    hex: ${paused_timer_color}
   - id: seconds_dot_color
-    hex: "3b89e3"
+    hex: ${seconds_dot_color}
