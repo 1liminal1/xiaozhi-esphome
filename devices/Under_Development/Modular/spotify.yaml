@@ -129,7 +129,7 @@ script:
                 url: !lambda |-
                   std::string url = id(spotify_album_art_url).state;
                   // If already a full URL, use as-is; otherwise prepend HA URL
-                  if (url.find("http://") == 0 || url.find("https://") == 0) {
+                  if (url.substr(0, 7) == "http://" || url.substr(0, 8) == "https://") {
                     return url;
                   } else {
                     return std::string("https://ha.liminal.net.au") + url;
