@@ -119,7 +119,7 @@ script:
       - if:
           condition:
             lambda: |-
-              return id(spotify_album_art_url).has_state() && 
+              return id(spotify_album_art_url).has_state() &&
                      id(spotify_album_art_url).state.length() > 10;
           then:
             - lambda: |-
@@ -127,7 +127,13 @@ script:
             - online_image.set_url:
                 id: spotify_album_art
                 url: !lambda |-
-                  return std::string("https://ha.liminal.net.au") + id(spotify_album_art_url).state;
+                  std::string url = id(spotify_album_art_url).state;
+                  // If already a full URL, use as-is; otherwise prepend HA URL
+                  if (url.find("http://") == 0 || url.find("https://") == 0) {
+                    return url;
+                  } else {
+                    return std::string("https://ha.liminal.net.au") + url;
+                  }
 
   - id: open_spotify_page
     mode: restart
