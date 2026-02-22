@@ -1603,44 +1603,23 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // Dark overlay at bottom for text readability (minimal CPU)
-          it.filled_rectangle(0, H - 35, W, 35, Color(0, 0, 0, 180));
-          it.filled_rectangle(0, H - 45, W, 10, Color(0, 0, 0, 90));
-          it.filled_rectangle(0, H - 50, W,  5, Color(0, 0, 0, 40));
+          // Dark overlay at bottom for text readability (solid, no alpha blending)
+          it.filled_rectangle(0, H - 48, W, 48, Color(0, 0, 0));
 
-          // Dark overlay at top-right for volume readability
-          it.filled_rectangle(W - 60, 0, 60, 22, Color(0, 0, 0, 140));
-          it.filled_rectangle(W - 60, 22, 60, 6, Color(0, 0, 0, 60));
-
-          // Song title (overlaid on art)
+          // Song title
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
             std::string title = id(spotify_title).state;
             if (title.length() > 22) title = title.substr(0, 22) + "...";
-            // Shadow then white text
-            it.printf(CX + 1, H - 32 + 1, id(spotify_title_font),
-                    Color(0, 0, 0), TextAlign::CENTER, "%s", title.c_str());
             it.printf(CX, H - 32, id(spotify_title_font),
                     Color(255, 255, 255), TextAlign::CENTER, "%s", title.c_str());
           }
 
-          // Artist (overlaid on art)
+          // Artist
           if (id(spotify_artist).has_state() && id(spotify_artist).state.length() > 0) {
             std::string artist = id(spotify_artist).state;
             if (artist.length() > 28) artist = artist.substr(0, 28) + "...";
-            // Shadow then light grey text
-            it.printf(CX + 1, H - 16 + 1, id(spotify_artist_font),
-                    Color(0, 0, 0), TextAlign::CENTER, "%s", artist.c_str());
             it.printf(CX, H - 16, id(spotify_artist_font),
                     Color(200, 200, 200), TextAlign::CENTER, "%s", artist.c_str());
-          }
-
-          // Volume display (top right)
-          if (id(spotify_volume).has_state()) {
-            // Shadow then white text
-            it.printf(W - 9, 7, id(spotify_small_font), Color(0, 0, 0),
-                    TextAlign::TOP_RIGHT, "%.0f%%", id(spotify_volume).state);
-            it.printf(W - 10, 6, id(spotify_small_font), Color(255, 255, 255),
-                    TextAlign::TOP_RIGHT, "%.0f%%", id(spotify_volume).state);
           }
 
           // Progress bar (bottom, overlaid)

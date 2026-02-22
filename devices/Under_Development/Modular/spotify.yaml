@@ -166,7 +166,7 @@ switch:
     entity_category: config
 
 interval:
-  - interval: 5s
+  - interval: 10s
     then:
       - if:
           condition:
