@@ -1603,10 +1603,10 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // Dark overlay at bottom for text readability (few solid bands, minimal CPU)
-          it.filled_rectangle(0, H - 50, W, 50, Color(0, 0, 0, 180));
-          it.filled_rectangle(0, H - 60, W, 10, Color(0, 0, 0, 100));
-          it.filled_rectangle(0, H - 68, W,  8, Color(0, 0, 0, 50));
+          // Dark overlay at bottom for text readability (minimal CPU)
+          it.filled_rectangle(0, H - 35, W, 35, Color(0, 0, 0, 180));
+          it.filled_rectangle(0, H - 45, W, 10, Color(0, 0, 0, 90));
+          it.filled_rectangle(0, H - 50, W,  5, Color(0, 0, 0, 40));
 
           // Dark overlay at top-right for volume readability
           it.filled_rectangle(W - 60, 0, 60, 22, Color(0, 0, 0, 140));
@@ -1617,9 +1617,9 @@
             std::string title = id(spotify_title).state;
             if (title.length() > 22) title = title.substr(0, 22) + "...";
             // Shadow then white text
-            it.printf(CX + 1, H - 42 + 1, id(spotify_title_font),
+            it.printf(CX + 1, H - 32 + 1, id(spotify_title_font),
                     Color(0, 0, 0), TextAlign::CENTER, "%s", title.c_str());
-            it.printf(CX, H - 42, id(spotify_title_font),
+            it.printf(CX, H - 32, id(spotify_title_font),
                     Color(255, 255, 255), TextAlign::CENTER, "%s", title.c_str());
           }
 
@@ -1628,9 +1628,9 @@
             std::string artist = id(spotify_artist).state;
             if (artist.length() > 28) artist = artist.substr(0, 28) + "...";
             // Shadow then light grey text
-            it.printf(CX + 1, H - 24 + 1, id(spotify_artist_font),
+            it.printf(CX + 1, H - 16 + 1, id(spotify_artist_font),
                     Color(0, 0, 0), TextAlign::CENTER, "%s", artist.c_str());
-            it.printf(CX, H - 24, id(spotify_artist_font),
+            it.printf(CX, H - 16, id(spotify_artist_font),
                     Color(200, 200, 200), TextAlign::CENTER, "%s", artist.c_str());
           }
 
