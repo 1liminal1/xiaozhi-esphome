@@ -1586,69 +1586,82 @@
 
       - id: spotify_page
         lambda: |-
-          // Background
-          it.fill(id(spotify_dark));
-          
           const int W = it.get_width();
           const int H = it.get_height();
           const int CX = W / 2;
-          
-          // Album art (160x160, centered higher since no icon at top)
-          const int art_size = 160;
-          const int art_x = (W - art_size) / 2;
-          const int art_y = 20;  // Moved up since no icon at top
-          
-          bool has_art = id(spotify_album_art_url).has_state() && 
+
+          bool has_art = id(spotify_album_art_url).has_state() &&
                         id(spotify_album_art_url).state.length() > 10;
-          
+
+          // Full-screen album art
           if (has_art) {
-            it.image(art_x, art_y, id(spotify_album_art), ImageAlign::TOP_LEFT);
+            it.image(0, 0, id(spotify_album_art), ImageAlign::TOP_LEFT);
           } else {
-            // Placeholder
-            it.filled_rectangle(art_x, art_y, art_size, art_size, Color(30, 30, 30));
-            it.rectangle(art_x, art_y, art_size, art_size, Color(60, 60, 60));
-            it.printf(CX, art_y + art_size/2, id(spotify_title_font), 
+            // Placeholder - fill dark
+            it.fill(id(spotify_dark));
+            it.printf(CX, H / 2, id(spotify_title_font),
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
-          
-          // Song title
+
+          // Dark gradient overlay at bottom for text readability
+          for (int i = 0; i < 80; i++) {
+            uint8_t alpha = (uint8_t)(200 * (1.0f - (float)i / 80.0f));
+            it.horizontal_line(0, H - 1 - i, W, Color(0, 0, 0, alpha));
+          }
+
+          // Dark overlay at top-right for volume readability
+          for (int i = 0; i < 30; i++) {
+            uint8_t alpha = (uint8_t)(160 * (1.0f - (float)i / 30.0f));
+            it.horizontal_line(W - 60, i, 60, Color(0, 0, 0, alpha));
+          }
+
+          // Song title (overlaid on art)
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
             std::string title = id(spotify_title).state;
             if (title.length() > 22) title = title.substr(0, 22) + "...";
-            it.printf(CX, art_y + art_size + 8, id(spotify_title_font), 
-                    id(spotify_green), TextAlign::TOP_CENTER, "%s", title.c_str());
+            // Shadow then white text
+            it.printf(CX + 1, H - 42 + 1, id(spotify_title_font),
+                    Color(0, 0, 0), TextAlign::CENTER, "%s", title.c_str());
+            it.printf(CX, H - 42, id(spotify_title_font),
+                    Color(255, 255, 255), TextAlign::CENTER, "%s", title.c_str());
           }
-          
-          // Artist
+
+          // Artist (overlaid on art)
           if (id(spotify_artist).has_state() && id(spotify_artist).state.length() > 0) {
             std::string artist = id(spotify_artist).state;
             if (artist.length() > 28) artist = artist.substr(0, 28) + "...";
-            it.printf(CX, art_y + art_size + 26, id(spotify_artist_font), 
-                    id(spotify_grey), TextAlign::TOP_CENTER, "%s", artist.c_str());
+            // Shadow then light grey text
+            it.printf(CX + 1, H - 24 + 1, id(spotify_artist_font),
+                    Color(0, 0, 0), TextAlign::CENTER, "%s", artist.c_str());
+            it.printf(CX, H - 24, id(spotify_artist_font),
+                    Color(200, 200, 200), TextAlign::CENTER, "%s", artist.c_str());
           }
-          
+
           // Volume display (top right)
           if (id(spotify_volume).has_state()) {
-            it.printf(W - 10, 10, id(spotify_small_font), id(spotify_grey), 
+            // Shadow then white text
+            it.printf(W - 9, 7, id(spotify_small_font), Color(0, 0, 0),
+                    TextAlign::TOP_RIGHT, "%.0f%%", id(spotify_volume).state);
+            it.printf(W - 10, 6, id(spotify_small_font), Color(255, 255, 255),
                     TextAlign::TOP_RIGHT, "%.0f%%", id(spotify_volume).state);
           }
-          
-          // Progress bar
-          if (id(spotify_position).has_state() && 
-              id(spotify_duration).has_state() && 
+
+          // Progress bar (bottom, overlaid)
+          if (id(spotify_position).has_state() &&
+              id(spotify_duration).has_state() &&
               id(spotify_duration).state > 0) {
             float pos = id(spotify_position).state;
             float dur = id(spotify_duration).state;
             float progress = std::min(1.0f, pos / dur);
-            
+
             const int bar_w = W - 40;
             const int bar_x = 20;
-            const int bar_y = H - 10;
+            const int bar_y = H - 6;
             const int bar_h = 3;
-            
+
             // Background
-            it.filled_rectangle(bar_x, bar_y, bar_w, bar_h, Color(40, 40, 40));
-            
+            it.filled_rectangle(bar_x, bar_y, bar_w, bar_h, Color(80, 80, 80));
+
             // Progress
             int prog_w = (int)(bar_w * progress);
             if (prog_w > 0) {
