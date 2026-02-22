@@ -279,7 +279,7 @@ binary_sensor:
             else:
               - if:
                   condition:
-                    lambda: return id(wake_word_engine_location).state == "On device";
+                    lambda: return id(wake_word_engine_location).current_option().value() == "On device";
                   then:
                     - media_player.stop:
                         id: external_media_player
@@ -312,7 +312,7 @@ binary_sensor:
               else:
                 - if:
                     condition:
-                      lambda: return id(wake_word_engine_location).state == "On device";
+                      lambda: return id(wake_word_engine_location).current_option().value() == "On device";
                     then:
                       - media_player.stop:
                           id: external_media_player
@@ -525,7 +525,7 @@ voice_assistant:
 
     - if:
         condition:
-          - lambda: return id(wake_word_engine_location).state == "On device";
+          - lambda: return id(wake_word_engine_location).current_option().value() == "On device";
         then:
           - lambda: id(va).set_use_wake_word(false);
           - micro_wake_word.start:
@@ -686,10 +686,10 @@ script:
     then:
       - lambda: |
           const auto timers = id(va).get_timers();
-          auto output_timer = timers.begin()->second;
-          for (auto &iterable_timer : timers) {
-            if (iterable_timer.second.is_active && iterable_timer.second.seconds_left <= output_timer.seconds_left) {
-              output_timer = iterable_timer.second;
+          auto output_timer = timers.front();
+          for (const auto &iterable_timer : timers) {
+            if (iterable_timer.is_active && iterable_timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = iterable_timer;
             }
           }
           id(global_first_active_timer) = output_timer;
@@ -700,8 +700,8 @@ script:
           const auto timers = id(va).get_timers();
           bool output = false;
           if (timers.size() > 0) {
-            for (auto &iterable_timer : timers) {
-              if (iterable_timer.second.is_active) output = true;
+            for (const auto &iterable_timer : timers) {
+              if (iterable_timer.is_active) output = true;
             }
           }
           id(global_is_timer_active) = output;
@@ -710,10 +710,10 @@ script:
     then:
       - lambda: |
           const auto timers = id(va).get_timers();
-          auto output_timer = timers.begin()->second;
-          for (auto &iterable_timer : timers) {
-            if (iterable_timer.second.seconds_left <= output_timer.seconds_left) {
-              output_timer = iterable_timer.second;
+          auto output_timer = timers.front();
+          for (const auto &iterable_timer : timers) {
+            if (iterable_timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = iterable_timer;
             }
           }
           id(global_first_timer) = output_timer;
@@ -917,7 +917,7 @@ script:
               - not:
                   speaker.is_playing:
                     id: box_speaker
-              - lambda: return id(wake_word_engine_location).state == "On device";
+              - lambda: return id(wake_word_engine_location).current_option().value() == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
             - micro_wake_word.start:
@@ -926,7 +926,7 @@ script:
             and:
               - not:
                   voice_assistant.is_running:
-              - lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+              - lambda: return id(wake_word_engine_location).current_option().value() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(true);
             - voice_assistant.start_continuous:
@@ -935,13 +935,13 @@ script:
     then:
       - if:
           condition:
-            lambda: return id(wake_word_engine_location).state == "In Home Assistant";
+            lambda: return id(wake_word_engine_location).current_option().value() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(false);
             - voice_assistant.stop:
       - if:
           condition:
-            lambda: return id(wake_word_engine_location).state == "On device";
+            lambda: return id(wake_word_engine_location).current_option().value() == "On device";
           then:
             - micro_wake_word.stop:
 
@@ -990,7 +990,7 @@ script:
           else:
             - if:
                 condition:
-                  lambda: return id(wake_word_engine_location).state == "On device";
+                  lambda: return id(wake_word_engine_location).current_option().value() == "On device";
                 then:
                   - if:
                       condition:
@@ -1006,7 +1006,7 @@ script:
   - id: show_clock_page
     then:
       - lambda: |-
-          const std::string sel = id(clock_style).state;
+          const std::string sel = id(clock_style).current_option().value();
           if (sel == "Spotify") {
             id(main_display).show_page(spotify_page);
           } else if (sel == "Default") {
@@ -1033,7 +1033,7 @@ script:
             "7-segment","Flip","Default","Presence","Weather","Small","Analog"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).state.c_str();
+          std::string cur = id(clock_style).current_option().value();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
@@ -1047,7 +1047,7 @@ script:
             "7-segment","Flip","Default","Presence","Weather","Small","Analog"
           };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).state.c_str();
+          std::string cur = id(clock_style).current_option().value();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int prev = (idx - 1 + N) % N;
@@ -1059,7 +1059,7 @@ script:
       - lambda: |-
           static const char* const opts[] = { "clock","hacker","ha-girl","mission","Rolex","starrysky","waves" };
           const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_wallpaper_image).state.c_str();
+          std::string cur = id(clock_wallpaper_image).current_option().value();
           int idx = 0;
           for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
           int next = (idx + 1) % N;
