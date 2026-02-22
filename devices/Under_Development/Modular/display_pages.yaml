@@ -1603,17 +1603,14 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // Dark gradient overlay at bottom for text readability
-          for (int i = 0; i < 80; i++) {
-            uint8_t alpha = (uint8_t)(200 * (1.0f - (float)i / 80.0f));
-            it.horizontal_line(0, H - 1 - i, W, Color(0, 0, 0, alpha));
-          }
+          // Dark overlay at bottom for text readability (few solid bands, minimal CPU)
+          it.filled_rectangle(0, H - 50, W, 50, Color(0, 0, 0, 180));
+          it.filled_rectangle(0, H - 60, W, 10, Color(0, 0, 0, 100));
+          it.filled_rectangle(0, H - 68, W,  8, Color(0, 0, 0, 50));
 
           // Dark overlay at top-right for volume readability
-          for (int i = 0; i < 30; i++) {
-            uint8_t alpha = (uint8_t)(160 * (1.0f - (float)i / 30.0f));
-            it.horizontal_line(W - 60, i, 60, Color(0, 0, 0, alpha));
-          }
+          it.filled_rectangle(W - 60, 0, 60, 22, Color(0, 0, 0, 140));
+          it.filled_rectangle(W - 60, 22, 60, 6, Color(0, 0, 0, 60));
 
           // Song title (overlaid on art)
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
