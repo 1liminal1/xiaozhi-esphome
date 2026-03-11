@@ -1,18 +1,24 @@
-# Core v1.07
+# Core v1.12-liminal
 
 substitutions:
   allowed_characters: >-
     !#%'()+,-./0123456789:;<>?@ABCDEFGHIJKLMNOPQRSTUVWYZ[]_abcdefghijklmnopqrstuvwxyz{|}°²³µ¿ÁÂÄÅÉÖÚßàáâãäåæçèéêëìíîðñòóôõöøùúûüýþāăąćčďĐđēėęěğĮįıļľŁłńňőřśšťũūůűųźŻżŽžơưșțΆΈΌΐΑΒΓΔΕΖΗΘΚΜΝΠΡΣΤΥΦάέήίαβγδεζηθικλμνξοπρςστυφχψωϊόύώАБВГДЕЖЗИКЛМНОПРСТУХЦЧШЪЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяёђєіїјљњћאבגדהוזחטיכלםמןנסעפץצקרשת،ءآأإئابةتجحخدذرزسشصضطظعغفقكلمنهوىيٹپچڈکگںھہیےংকচতধনফবযরলশষস়ািু্చయలిెొ్ംഅആഇഈഉഎഓകഗങചജഞടഡണതദധനപഫബഭമയരറലളവശസഹാിീുൂെേൈ്ൺൻർൽൾაბგდევზთილმნოპრსტუფქყშჩცძჭხạảấầẩậắặẹẽếềểệỉịọỏốồổỗộớờởợụủứừửữựỳ—、一上不个中为主乾了些亮人任低佔何作供依侧係個側偵充光入全关冇冷几切到制前動區卧厅厨及口另右吊后吗启吸呀咗哪唔問啟嗎嘅嘛器圍在场執場外多大始安定客室家密寵对將小少左已帘常幫幾库度庫廊廚廳开式後恆感態成我戲戶户房所扇手打执把拔换掉控插摄整斯新明是景暗更最會有未本模機檯櫃欄次正氏水沒没洗活派温測源溫漏潮激濕灯為無煙照熱燈燥物狀玄现現瓦用發的盞目着睡私空窗立笛管節簾籬紅線红罐置聚聲脚腦腳臥色节著行衣解設調請謝警设调走路車车运連遊運過道邊部都量鎖锁門閂閉開關门闭除隱離電震霧面音頂題顏颜風风食餅餵가간감갔강개거게겨결경고공과관그금급기길깥꺼껐꼽나난내네놀누는능니다닫담대더데도동됐되된됨둡드든등디때떤뜨라래러렇렌려로료른를리림링마많명몇모무문물뭐바밝방배변보부불블빨뽑사산상색서설성세센션소쇼수스습시신실싱아안않알았애야어얼업없었에여연열옆오온완외왼요운움워원위으은을음의이인일임입있작잠장재전절정제져조족종주줄중줘지직진짐쪽차창천최추출충치침커컴켜켰쿠크키탁탄태탬터텔통트튼티파팬퍼폰표퓨플핑한함해했행혀현화활후휴힘，？
-  loading_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/loading.png
-  idle_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/idle.png
-  listening_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/listening.png
-  thinking_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
-  replying_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/replying.png
-  error_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/error.png
-  timer_finished_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
-  mute_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/mute.png
-  playing_illustration_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/${imagemodel}/${imagewidth}x${imageheight}/playing.png
-  clock_background_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/Other/${imagewidth}x${imageheight}/${clock_background_image}.png
+  # Default image source (override in device YAML for local hosting)
+  imagepath: "https://github.com/1liminal1/xiaozhi-esphome/raw/main/images"
+  # Screen dimensions default to image dimensions (override for P4/large displays)
+  screenwidth: "${imagewidth}"
+  screenheight: "${imageheight}"
+
+  loading_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/loading.png
+  idle_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/idle.png
+  listening_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/listening.png
+  thinking_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/thinking.png
+  replying_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/replying.png
+  error_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/error.png
+  timer_finished_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/timer_finished.png
+  mute_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/mute.png
+  playing_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/playing.png
+  clock_background_file: ${imagepath}/Other/${screenwidth}x${screenheight}/${clock_background_image}.png
   startup_sound_file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/sounds/${startup_sound}.flac
 
   # Background colors - Solarized theme (override in device YAML)
@@ -29,23 +35,20 @@ substitutions:
   seconds_dot_color: "268bd2"      # Solarized blue
 
   voice_assist_idle_phase_id: "1"
-  voice_assist_listening_phase_id: "2"
-  voice_assist_thinking_phase_id: "3"
-  voice_assist_replying_phase_id: "4"
+  voice_assist_waiting_for_command_phase_id: "2"
+  voice_assist_listening_phase_id: "3"
+  voice_assist_thinking_phase_id: "4"
+  voice_assist_replying_phase_id: "5"
   voice_assist_not_ready_phase_id: "10"
   voice_assist_error_phase_id: "11"
   voice_assist_muted_phase_id: "12"
+  voice_assist_playing_phase_id: "13"
   voice_assist_timer_finished_phase_id: "20"
-
-  # Wake word configuration defaults (override in device YAML)
-  wake_word_sliding_window_size: "10"
-  vad_model_url: "github://esphome/micro-wake-word-models/models/v2/vad.json@main"
-  vad_probability_cutoff: "0.60"
 
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
-  min_version: 2025.5.0
+  min_version: 2026.2.0
   name_add_mac_suffix: false
   on_boot:
     priority: 600
@@ -87,22 +90,32 @@ online_image:
     url: ${clock_background_file}
     format: PNG
     type: RGB565
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     update_interval: never
   - id: temp_fullscreen
     url: ${clock_background_file}
     format: PNG
     type: RGB565
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     update_interval: never
 
 time:
   - platform: homeassistant
     id: homeassistant_time
+    on_time:
+      - seconds: 0
+        then:
+          - if:
+              condition:
+                lambda: return id(show_clock) && !id(clock_show_seconds).state;
+              then:
+                - component.update: main_display
 
 api:
   on_client_connected:
     - script.execute: draw_display
+    - script.execute: stop_wake_word
+    - delay: 500ms
     - lambda: |-
         if (!id(boot_sound_played)) {
           id(boot_sound_played) = true;
@@ -296,7 +309,7 @@ binary_sensor:
     pin:
       number: 0
       mode: INPUT_PULLUP
-      ignore_strapping_warning: true
+#      ignore_strapping_warning: true
       inverted: true
     id: left_button
     on_multi_click:
@@ -328,7 +341,7 @@ binary_sensor:
           - ON for at least 1s
         then:
           - switch.toggle: show_battery_status
-          - script.execute: draw_display
+          - component.update: main_display
 
   - platform: template
     name: "Timer Ringing Active"
@@ -436,14 +449,7 @@ light:
     blue: clock_color_b
 
 micro_wake_word:
-  id: mww
-  models:
-    - model: ${wake_word_model_url}
-      probability_cutoff: ${wake_word_probability}
-      sliding_window_size: ${wake_word_sliding_window_size}
-  vad:
-    model: ${vad_model_url}
-    probability_cutoff: ${vad_probability_cutoff}
+  id: !extend mww
   on_wake_word_detected:
     - script.execute: reset_screensaver
     - if:
@@ -469,13 +475,9 @@ voice_assistant:
 
   on_listening:
     - script.execute: reset_screensaver
-    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_phase_id};
-    - text_sensor.template.publish:
-        id: text_request_full
-        state: "..."
-    - text_sensor.template.publish:
-        id: text_response_full
-        state: "..."
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_waiting_for_command_phase_id}
     - text_sensor.template.publish:
         id: text_request
         state: "..."
@@ -484,36 +486,52 @@ voice_assistant:
         state: "..."
     - script.execute: draw_display
 
+  on_stt_vad_start:
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_listening_phase_id}
+
   on_stt_vad_end:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_thinking_phase_id}
     - script.execute: draw_display
 
   on_stt_end:
+    - script.execute:
+        id: send_stt_text_event
+        stt_text: !lambda 'return x;'
     - text_sensor.template.publish:
         id: text_request
         state: !lambda return x;
-    - text_sensor.template.publish:
-        id: text_request_full
-        state: !lambda return x;
     - script.execute: draw_display
 
+
   on_tts_start:
+    - script.execute:
+        id: send_tts_text_event
+        tts_text: !lambda 'return x;'
     - script.execute: reset_screensaver
     - text_sensor.template.publish:
         id: text_response
         state: !lambda return x;
-    - text_sensor.template.publish:
-        id: text_response_full
-        state: !lambda return x;
-    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_replying_phase_id}
     - lambda: 'id(playing_internal_sound) = true;'
     - script.execute: draw_display
+
+  on_tts_end:
+    - script.execute:
+        id: send_tts_uri_event
+        tts_uri: !lambda 'return x;'
 
   on_end:
     - wait_until:
         condition:
           - media_player.is_announcing:
         timeout: 0.5s
+
     - wait_until:
         condition:
           - and:
@@ -525,35 +543,44 @@ voice_assistant:
 
     - if:
         condition:
-          - lambda: return id(wake_word_engine_location).current_option() == "On device";
+          lambda: return id(wake_word_engine_location).current_option() == "On device";
         then:
           - lambda: id(va).set_use_wake_word(false);
           - micro_wake_word.start:
-    - script.execute: set_idle_or_mute_phase
-    - script.execute: draw_display
-    - text_sensor.template.publish:
-        id: text_request
-        state: ""
-    - text_sensor.template.publish:
-        id: text_response
-        state: ""
+          - script.execute: set_idle_or_mute_phase
+          - script.execute: draw_display
+        else:
+          - if:
+              condition:
+                lambda: |-
+                  return id(voice_assistant_phase) == ${voice_assist_replying_phase_id}
+                      || id(voice_assistant_phase) == ${voice_assist_thinking_phase_id};
+              then:
+                - script.execute: set_idle_or_mute_phase
+                - script.execute: draw_display
 
   on_error:
     - if:
         condition:
           lambda: return !id(init_in_progress);
         then:
-          - lambda: id(voice_assistant_phase) = ${voice_assist_error_phase_id};
+          - script.execute:
+              id: set_phase
+              phase: ${voice_assist_error_phase_id}
           - script.execute: draw_display
           - delay: 1s
           - if:
               condition:
                 switch.is_off: mute
               then:
-                - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+                - script.execute:
+                    id: set_phase
+                    phase: ${voice_assist_idle_phase_id}
               else:
-                - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
-          - script.execute: draw_display
+                - script.execute:
+                    id: set_phase
+                    phase: ${voice_assist_muted_phase_id}
+                - script.execute: draw_display
 
   on_client_connected:
     - lambda: id(init_in_progress) = false;
@@ -563,7 +590,9 @@ voice_assistant:
 
   on_client_disconnected:
     - script.execute: stop_wake_word
-    - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_not_ready_phase_id}
     - script.execute: draw_display
 
   on_timer_started:
@@ -571,20 +600,22 @@ voice_assistant:
     - script.execute: draw_display
 
   on_timer_cancelled:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_updated:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_tick:
-    - script.execute: draw_display
+    - component.update: main_display
 
   on_timer_finished:
     - switch.turn_on: timer_ringing
     - wait_until:
         condition:
           - media_player.is_announcing:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_timer_finished_phase_id};
+    - script.execute:
+        id: set_phase
+        phase: ${voice_assist_timer_finished_phase_id}
     - script.execute: draw_display
 
 interval:
@@ -599,7 +630,7 @@ interval:
           id(check_if_timers_active).execute();
           const bool has_active_timer = id(global_is_timer_active);
 
-          if (idle_phase && not_muted && clock_ok && not_fullscreen && !has_active_timer) {
+          if (!id(init_in_progress) && idle_phase && not_muted && clock_ok && not_fullscreen && !has_active_timer) {
             id(idle_seconds)++;
             int delay_s = (int) id(clock_delay_seconds).state;
             if (delay_s <= 0) delay_s = 30;
@@ -613,9 +644,17 @@ interval:
           }
       - if:
           condition:
-            lambda: return id(show_clock);
+            lambda: return id(show_clock) && id(clock_show_seconds).state;
           then:
             - component.update: main_display
+
+  - interval: 5s
+    then:
+      - if:
+          condition:
+            lambda: return id(show_clock) && !id(clock_show_seconds).state;
+          then:
+           - component.update: main_display
 
 script:
   - id: draw_display
@@ -646,6 +685,7 @@ script:
                               return;
                             }
                             switch(id(voice_assistant_phase)) {
+                              case ${voice_assist_waiting_for_command_phase_id}:
                               case ${voice_assist_listening_phase_id}:
                                 id(main_display).show_page(listening_page);
                                 break;
@@ -684,45 +724,50 @@ script:
 
   - id: fetch_first_active_timer
     then:
-      - lambda: |
-          const auto timers = id(va).get_timers();
-          auto output_timer = timers.front();
-          for (const auto &iterable_timer : timers) {
-            if (iterable_timer.is_active && iterable_timer.seconds_left <= output_timer.seconds_left) {
-              output_timer = iterable_timer;
+      - lambda: |-
+          const auto &timers = id(va).get_timers();
+          if (timers.empty()) return;
+
+          auto output_timer = *timers.begin();
+          for (const auto &timer : timers) {
+            if (timer.is_active && timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = timer;
             }
           }
           id(global_first_active_timer) = output_timer;
 
   - id: check_if_timers_active
     then:
-      - lambda: |
-          const auto timers = id(va).get_timers();
+      - lambda: |-
+          const auto &timers = id(va).get_timers();
           bool output = false;
-          if (timers.size() > 0) {
-            for (const auto &iterable_timer : timers) {
-              if (iterable_timer.is_active) output = true;
+          for (const auto &timer : timers) {
+            if (timer.is_active) {
+              output = true;
+              break;
             }
           }
           id(global_is_timer_active) = output;
 
   - id: fetch_first_timer
     then:
-      - lambda: |
-          const auto timers = id(va).get_timers();
-          auto output_timer = timers.front();
-          for (const auto &iterable_timer : timers) {
-            if (iterable_timer.seconds_left <= output_timer.seconds_left) {
-              output_timer = iterable_timer;
+      - lambda: |-
+          const auto &timers = id(va).get_timers();
+          if (timers.empty()) return;
+
+          auto output_timer = *timers.begin();
+          for (const auto &timer : timers) {
+            if (timer.seconds_left <= output_timer.seconds_left) {
+              output_timer = timer;
             }
           }
           id(global_first_timer) = output_timer;
 
   - id: check_if_timers
     then:
-      - lambda: |
-          const auto timers = id(va).get_timers();
-          id(global_is_timer) = (timers.size() > 0);
+      - lambda: |-
+          const auto &timers = id(va).get_timers();
+          id(global_is_timer) = !timers.empty();
 
   - id: draw_timer_timeline
     then:
@@ -914,9 +959,9 @@ script:
             and:
               - not:
                   voice_assistant.is_running:
-              - not:
-                  speaker.is_playing:
-                    id: box_speaker
+#              - not:
+#                  speaker.is_playing:
+#                    id: box_speaker
               - lambda: return id(wake_word_engine_location).current_option() == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
@@ -951,9 +996,13 @@ script:
           condition:
             switch.is_off: mute
           then:
-            - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+            - script.execute:
+                id: set_phase
+                phase: ${voice_assist_idle_phase_id}
           else:
-            - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+            - script.execute:
+                id: set_phase
+                phase: ${voice_assist_muted_phase_id}
 
   - id: play_sound
     parameters:
@@ -1003,73 +1052,6 @@ script:
       - display.page.show: idle_page
       - component.update: main_display
 
-  - id: show_clock_page
-    then:
-      - lambda: |-
-          const std::string sel = id(clock_style).current_option();
-          if (sel == "Spotify") {
-            id(main_display).show_page(spotify_page);
-          } else if (sel == "Default") {
-            id(main_display).show_page(default_clock);
-          } else if (sel == "Flip") {
-            id(main_display).show_page(flip_clock);
-          } else if (sel == "Presence") {
-            id(main_display).show_page(presence_sensor_clock);
-          } else if (sel == "Weather") {
-            id(main_display).show_page(weather_clock);
-          } else if (sel == "Small") {
-            id(main_display).show_page(small_clock);
-          } else if (sel == "Analog") {
-            id(main_display).show_page(analog_clock);
-          } else {
-            id(main_display).show_page(clock_7segment);
-          }
-          id(main_display).update();
-
-  - id: swipe_left_action   # next clock style
-    then:
-      - lambda: |-
-          static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog"
-          };
-          const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).current_option();
-          int idx = 0;
-          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
-          int next = (idx + 1) % N;
-          id(clock_style).publish_state(opts[next]);
-      - script.execute: show_clock_page
-
-  - id: swipe_right_action  # previous clock style
-    then:
-      - lambda: |-
-          static const char* const opts[] = {
-            "7-segment","Flip","Default","Presence","Weather","Small","Analog"
-          };
-          const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_style).current_option();
-          int idx = 0;
-          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
-          int prev = (idx - 1 + N) % N;
-          id(clock_style).publish_state(opts[prev]);
-      - script.execute: show_clock_page
-
-  - id: swipe_up_action     # next wallpaper (cycle)
-    then:
-      - lambda: |-
-          static const char* const opts[] = { "clock","hacker","ha-girl","mission","Rolex","starrysky","waves" };
-          const int N = sizeof(opts)/sizeof(opts[0]);
-          std::string cur = id(clock_wallpaper_image).current_option();
-          int idx = 0;
-          for (int i = 0; i < N; i++) if (cur == opts[i]) { idx = i; break; }
-          int next = (idx + 1) % N;
-          id(clock_wallpaper_image).publish_state(opts[next]);
-      - script.execute: draw_display
-
-  - id: swipe_down_action   # toggle battery widget
-    then:
-      - switch.toggle: show_battery_status
-      - script.execute: draw_display
 
   - id: pulse_swipe_left
     mode: restart
@@ -1105,6 +1087,51 @@ script:
       - delay: 150ms
       - binary_sensor.template.publish: { id: touch_input, state: OFF }
 
+  - id: send_tts_uri_event
+    parameters:
+      tts_uri: string
+    then:
+      - homeassistant.event:
+          event: esphome.tts_uri
+          data:
+            node: ${name}
+            uri: !lambda return tts_uri;
+  - id: send_stt_text_event
+    parameters:
+      stt_text: string
+    then:
+      - homeassistant.event:
+          event: esphome.stt_text
+          data:
+            node: ${name}
+            text: !lambda return stt_text;
+  - id: send_tts_text_event
+    parameters:
+      tts_text: string
+    then:
+      - homeassistant.event:
+          event: esphome.tts_text
+          data:
+            node: ${name}
+            text: !lambda return tts_text;
+
+  - id: set_phase
+    parameters:
+      phase: int
+    then:
+      - lambda: id(voice_assistant_phase) = phase;
+      - text_sensor.template.publish:
+          id: voice_assistant_phase_sensor
+          state: !lambda |-
+            char buf[8];
+            snprintf(buf, sizeof(buf), "%d", phase);
+            return std::string(buf);
+      - homeassistant.event:
+          event: esphome.phase_id
+          data:
+            node: ${name}
+            phase: !lambda return phase;
+
 switch:
   - platform: template
     name: Mute
@@ -1115,12 +1142,16 @@ switch:
     entity_category: config
     on_turn_off:
       - microphone.unmute:
-      - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+      - script.execute:
+          id: set_phase
+          phase: ${voice_assist_idle_phase_id}
       - script.execute: reset_screensaver
       - script.execute: draw_display
     on_turn_on:
       - microphone.mute:
-      - lambda: id(voice_assistant_phase) = ${voice_assist_muted_phase_id};
+      - script.execute:
+          id: set_phase
+          phase: ${voice_assist_muted_phase_id}
       - script.execute: reset_screensaver
       - script.execute: draw_display
 
@@ -1185,9 +1216,9 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
     on_turn_on:
-      - script.execute: draw_display
+      - component.update: main_display
     on_turn_off:
-      - script.execute: draw_display
+      - component.update: main_display
 
   - platform: template
     id: clock_enabled
@@ -1210,6 +1241,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_time
@@ -1218,6 +1253,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_seconds
@@ -1226,6 +1265,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_date
@@ -1234,6 +1277,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_dots
@@ -1242,6 +1289,10 @@ switch:
     entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
+    on_turn_on:
+      - component.update: main_display
+    on_turn_off:
+      - component.update: main_display
 
   - platform: template
     id: clock_show_wallpaper
@@ -1303,57 +1354,6 @@ select:
                         switch.is_off: mute
                       then:
                         - micro_wake_word.start
-
-  - platform: template
-    entity_category: config
-    name: "Clock Style"
-    id: clock_style
-    icon: "mdi:clock-digital"
-    optimistic: true
-    restore_value: true
-    options:
-      - 7-segment
-      - Flip
-      - Default
-      - Presence
-      - Weather
-      - Small
-      - Analog
-      - Spotify      
-    initial_option: Default
-    on_value:
-      - if:
-          condition:
-            lambda: return id(show_clock);
-          then:
-            - script.execute: show_clock_page
-
-  - platform: template
-    entity_category: config
-    name: "Clock Wallpaper (Online)"
-    id: clock_wallpaper_image
-    icon: "mdi:image"
-    optimistic: true
-    restore_value: true
-    options:
-      - clock
-      - hacker
-      - ha-girl
-      - mission
-      - Rolex
-      - starrysky
-      - waves
-      - foundation
-    initial_option: ${clock_background_image}
-    on_value:
-      - online_image.set_url:
-          id: clock_background
-          url: !lambda |-
-            std::string base = "https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/Other/"
-                               "${imagewidth}x${imageheight}/";
-            return base + std::string(x) + ".png";
-          update: true
-      - script.execute: draw_display
 
 globals:
   - id: init_in_progress
@@ -1440,47 +1440,47 @@ globals:
 image:
   - file: ${error_illustration_file}
     id: casita_error
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${idle_illustration_file}
     id: casita_idle
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${listening_illustration_file}
     id: casita_listening
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${thinking_illustration_file}
     id: casita_thinking
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${replying_illustration_file}
     id: casita_replying
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${timer_finished_illustration_file}
     id: casita_timer_finished
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${loading_illustration_file}
     id: casita_initializing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${mute_illustration_file}
     id: casita_muted
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: ${playing_illustration_file}
     id: casita_playing
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: https://raw.githubusercontent.com/1liminal1/xiaozhi-esphome/main/images/Other/error-no-wifi.png
     id: error_no_wifi
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
   - file: https://github.com/1liminal1/xiaozhi-esphome/raw/main/images/Other/error-no-ha.png
     id: error_no_ha
-    resize: ${imagewidth}x${imageheight}
+    resize: ${screenwidth}x${screenheight}
     type: RGB565
 
 font:
@@ -1527,46 +1527,31 @@ font:
 
 text_sensor:
   - id: text_request
+    name: "Text Request"
     platform: template
     on_value:
       lambda: |-
-        if(id(text_request).state.length()>30) {
-          std::string name = id(text_request).state.c_str();
-          std::string truncated = esphome::str_truncate(name.c_str(),31);
-          id(text_request).state = (truncated+"...").c_str();
+        auto &s = id(text_request).state;
+        if (s.length() > 30) {
+          s.resize(30);
+          s += "...";
         }
 
   - id: text_response
-    platform: template
-    on_value:
-      lambda: |-
-        if(id(text_response).state.length()>30) {
-          std::string name = id(text_response).state.c_str();
-          std::string truncated = esphome::str_truncate(name.c_str(),31);
-          id(text_response).state = (truncated+"...").c_str();
-        }
-
-  - id: text_request_full
-    platform: template
-    name: "Text Request"
-    on_value:
-      lambda: |-
-        if (id(text_request_full).state.length() > 250) {
-          std::string s = id(text_request_full).state.c_str();
-          std::string truncated = esphome::str_truncate(s.c_str(), 250);
-          id(text_request_full).state = truncated.c_str();
-        }
-
-  - id: text_response_full
-    platform: template
     name: "Text Response"
+    platform: template
     on_value:
       lambda: |-
-        if (id(text_response_full).state.length() > 250) {
-          std::string s = id(text_response_full).state.c_str();
-          std::string truncated = esphome::str_truncate(s.c_str(), 250);
-          id(text_response_full).state = truncated.c_str();
+        auto &s = id(text_response).state;
+        if (s.length() > 30) {
+          s.resize(30);
+          s += "...";
         }
+
+  - platform: template
+    id: voice_assistant_phase_sensor
+    name: "Voice Assistant Phase ID"
+    update_interval: never
 
   - platform: homeassistant
     id: ha_weather_temperature_unit
@@ -1588,7 +1573,7 @@ text_sensor:
 
 color:
   - id: idle_color
-    hex: ${idle_illustration_background_color}
+    hex: ${loading_illustration_background_color}
   - id: listening_color
     hex: ${listening_illustration_background_color}
   - id: thinking_color
