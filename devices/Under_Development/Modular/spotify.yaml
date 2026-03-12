@@ -51,7 +51,7 @@ sensor:
 online_image:
   - id: spotify_album_art
     url: https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0
-    resize: 240x240
+    resize: ${screenwidth}x${screenheight}
     format: JPEG
     type: RGB565
     update_interval: never
