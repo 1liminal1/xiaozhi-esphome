@@ -8,6 +8,10 @@ substitutions:
   # Screen dimensions default to image dimensions (override for P4/large displays)
   screenwidth: "${imagewidth}"
   screenheight: "${imageheight}"
+  # Spotify font sizes - scale with display (defaults for 240px, override for larger)
+  spotify_title_font_size: "16"
+  spotify_artist_font_size: "13"
+  spotify_small_font_size: "11"
 
   loading_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/loading.png
   idle_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/idle.png

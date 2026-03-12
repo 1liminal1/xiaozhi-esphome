@@ -74,7 +74,7 @@ font:
       family: ${font_family}
       weight: 700
     id: spotify_title_font
-    size: 16
+    size: ${spotify_title_font_size}
     glyphsets:
       - ${font_glyphsets}
     ignore_missing_glyphs: true
@@ -84,7 +84,7 @@ font:
       family: ${font_family}
       weight: 400
     id: spotify_artist_font
-    size: 13
+    size: ${spotify_artist_font_size}
     glyphsets:
       - ${font_glyphsets}
     ignore_missing_glyphs: true
@@ -94,7 +94,7 @@ font:
       family: ${font_family}
       weight: 400
     id: spotify_small_font
-    size: 11
+    size: ${spotify_small_font_size}
     glyphsets:
       - ${font_glyphsets}
     ignore_missing_glyphs: true

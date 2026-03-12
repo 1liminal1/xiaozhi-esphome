@@ -20,6 +20,11 @@ substitutions:
   screenheight: "720"
   rotate_display: "0"
 
+  # Spotify fonts scaled for 720px display
+  spotify_title_font_size: "48"
+  spotify_artist_font_size: "36"
+  spotify_small_font_size: "30"
+
   startup_sound: "available" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready, videogames, respect-and-enjoy-the-peace)
   clock_background_image: "tron" # (options are: clock, hacker, mission, Rolex, starrysky, waves, tron, chip, waterdrops, foundation)
   imagemodel: "Luffy" # options are:
