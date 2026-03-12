@@ -3288,14 +3288,15 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // Dark overlay at bottom for text readability (solid, no alpha blending)
-          it.filled_rectangle(0, H - 48, W, 48, Color(0, 0, 0));
+          // Dark overlay at bottom for text readability (proportional to screen height)
+          const int overlay_h = H / 5;
+          it.filled_rectangle(0, H - overlay_h, W, overlay_h, Color(0, 0, 0));
 
           // Song title
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
             std::string title = id(spotify_title).state;
             if (title.length() > 22) title = title.substr(0, 22) + "...";
-            it.printf(CX, H - 32, id(spotify_title_font),
+            it.printf(CX, H - overlay_h * 2 / 3, id(spotify_title_font),
                     Color(255, 255, 255), TextAlign::CENTER, "%s", title.c_str());
           }
 
@@ -3303,7 +3304,7 @@
           if (id(spotify_artist).has_state() && id(spotify_artist).state.length() > 0) {
             std::string artist = id(spotify_artist).state;
             if (artist.length() > 28) artist = artist.substr(0, 28) + "...";
-            it.printf(CX, H - 16, id(spotify_artist_font),
+            it.printf(CX, H - overlay_h / 3, id(spotify_artist_font),
                     Color(200, 200, 200), TextAlign::CENTER, "%s", artist.c_str());
           }
 
