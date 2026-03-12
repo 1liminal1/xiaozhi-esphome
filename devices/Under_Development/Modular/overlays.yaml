@@ -1,0 +1,109 @@
+# ============================================================================
+# FILE: devices/Under_Development/Modular/overlays.yaml
+# Overlay pages: Volume control, Room lights, Music launcher
+# Include as a package in device YAML. Override vol*/blight* substitutions.
+# ============================================================================
+
+# ── HA sensors for volume overlay ────────────────────────────────────
+sensor:
+  - platform: homeassistant
+    id: vol1_level
+    entity_id: ${vol1_entity}
+    attribute: volume_level
+    internal: true
+  - platform: homeassistant
+    id: vol2_level
+    entity_id: ${vol2_entity}
+    attribute: volume_level
+    internal: true
+  - platform: homeassistant
+    id: vol3_level
+    entity_id: ${vol3_entity}
+    attribute: volume_level
+    internal: true
+  - platform: homeassistant
+    id: vol4_level
+    entity_id: ${vol4_entity}
+    attribute: volume_level
+    internal: true
+  - platform: homeassistant
+    id: vol5_level
+    entity_id: ${vol5_entity}
+    attribute: volume_level
+    internal: true
+
+# ── HA sensors for lights overlay ────────────────────────────────────
+text_sensor:
+  - platform: homeassistant
+    id: blight1_state
+    entity_id: ${blight1_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight2_state
+    entity_id: ${blight2_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight3_state
+    entity_id: ${blight3_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight4_state
+    entity_id: ${blight4_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight5_state
+    entity_id: ${blight5_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight6_state
+    entity_id: ${blight6_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight7_state
+    entity_id: ${blight7_entity}
+    internal: true
+  - platform: homeassistant
+    id: blight8_state
+    entity_id: ${blight8_entity}
+    internal: true
+
+# ── Fonts for overlay pages ──────────────────────────────────────────
+font:
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 700
+    id: overlay_title_font
+    size: ${overlay_title_font_size}
+    glyphsets:
+      - ${font_glyphsets}
+    ignore_missing_glyphs: true
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 400
+    id: overlay_label_font
+    size: ${overlay_label_font_size}
+    glyphsets:
+      - ${font_glyphsets}
+    ignore_missing_glyphs: true
+
+# ── Overlay refresh interval ─────────────────────────────────────────
+interval:
+  - interval: 2s
+    then:
+      - if:
+          condition:
+            lambda: 'return id(overlay_lock) && id(active_overlay) > 0;'
+          then:
+            - component.update: main_display
+
+# ── UI switch to enable overlay access via swipe-up ──────────────────
+switch:
+  - platform: template
+    id: overlay_enabled
+    name: "Overlay Pages"
+    icon: "mdi:layers"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config

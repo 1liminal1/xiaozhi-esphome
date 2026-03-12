@@ -131,8 +131,12 @@ touchscreen:
             if (is_up)    id(pulse_swipe_up).execute();
             if (is_down)  id(pulse_swipe_down).execute();
 
-            // Optional local handling
-            if (id(swipe_local).state) {
+            // Overlay-aware local handling
+            if (id(overlay_lock)) {
+              if (is_left)  id(overlay_next).execute();
+              if (is_right) id(overlay_prev).execute();
+              if (is_down)  id(close_overlay).execute();
+            } else if (id(swipe_local).state) {
               if (is_left)  id(swipe_left_action).execute();
               if (is_right) id(swipe_right_action).execute();
               if (is_up)    id(swipe_up_action).execute();

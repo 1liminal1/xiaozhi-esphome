@@ -13,6 +13,40 @@ substitutions:
   spotify_artist_font_size: "13"
   spotify_small_font_size: "11"
 
+  # Overlay page entities — override in device YAML to enable overlays
+  # Volume players (entity_id for volume_level attribute)
+  vol1_entity: "media_player.none"
+  vol1_label: "Player 1"
+  vol2_entity: "media_player.none"
+  vol2_label: "Player 2"
+  vol3_entity: "media_player.none"
+  vol3_label: "Player 3"
+  vol4_entity: "media_player.none"
+  vol4_label: "Player 4"
+  vol5_entity: "media_player.none"
+  vol5_label: "Player 5"
+  # Room lights (8 slots)
+  blight1_entity: "light.none"
+  blight1_label: "Light 1"
+  blight2_entity: "light.none"
+  blight2_label: "Light 2"
+  blight3_entity: "light.none"
+  blight3_label: "Light 3"
+  blight4_entity: "light.none"
+  blight4_label: "Light 4"
+  blight5_entity: "light.none"
+  blight5_label: "Light 5"
+  blight6_entity: "light.none"
+  blight6_label: "Light 6"
+  blight7_entity: "light.none"
+  blight7_label: "Light 7"
+  blight8_entity: "light.none"
+  blight8_label: "Light 8"
+  # Overlay font sizes (defaults for 240px, override for larger)
+  overlay_title_font_size: "16"
+  overlay_label_font_size: "13"
+  overlay_icon_font_size: "22"
+
   loading_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/loading.png
   idle_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/idle.png
   listening_illustration_file: ${imagepath}/${imagemodel}/${imagewidth}x${imageheight}/listening.png
@@ -665,7 +699,7 @@ script:
     then:
       - if:
           condition:
-            lambda: return !id(init_in_progress);
+            lambda: return !id(init_in_progress) && !id(overlay_lock);
           then:
             - if:
                 condition:
@@ -1086,10 +1120,176 @@ script:
       - binary_sensor.template.publish: { id: swipe_down,  state: OFF }
 
   - id: pulse_touch_input
+    mode: restart
     then:
-      - binary_sensor.template.publish: { id: touch_input, state: ON }
-      - delay: 150ms
-      - binary_sensor.template.publish: { id: touch_input, state: OFF }
+      - if:
+          condition:
+            lambda: 'return id(overlay_lock);'
+          then:
+            # Overlay active — handle tap locally via coordinate hit-test
+            - script.execute: handle_overlay_tap
+          else:
+            - if:
+                condition:
+                  lambda: 'return !id(double_tap_enabled);'
+                then:
+                  # Legacy behaviour — single tap wakes VA (backward compatible)
+                  - binary_sensor.template.publish: { id: touch_input, state: ON }
+                  - delay: 150ms
+                  - binary_sensor.template.publish: { id: touch_input, state: OFF }
+                else:
+                  # Double-tap mode: restart resets the 300 ms window each tap
+                  - lambda: 'id(dt_tap_count) += 1;'
+                  - delay: 300ms
+                  - if:
+                      condition:
+                        lambda: 'return id(dt_tap_count) >= 2;'
+                      then:
+                        # Double-tap → wake voice assistant
+                        - lambda: 'id(dt_tap_count) = 0;'
+                        - binary_sensor.template.publish: { id: touch_input, state: ON }
+                        - delay: 150ms
+                        - binary_sensor.template.publish: { id: touch_input, state: OFF }
+                      else:
+                        # Single tap → fire HA event for Node-RED media control
+                        - lambda: 'id(dt_tap_count) = 0;'
+                        - homeassistant.event:
+                            event: esphome.single_tap
+                            data:
+                              node: ${name}
+
+  # ── Overlay page scripts ──────────────────────────────────────────
+  - id: open_overlay
+    parameters:
+      page: int
+    then:
+      - lambda: |-
+          id(overlay_lock) = true;
+          id(active_overlay) = page;
+          id(overlay_cursor) = 0;
+          id(show_clock) = false;
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 1;'
+          then:
+            - display.page.show: volume_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 2;'
+          then:
+            - display.page.show: lights_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 3;'
+          then:
+            - display.page.show: music_page
+      - component.update: main_display
+
+  - id: close_overlay
+    then:
+      - lambda: |-
+          id(overlay_lock) = false;
+          id(active_overlay) = 0;
+      - script.execute: draw_display
+
+  - id: overlay_next
+    then:
+      - lambda: |-
+          int p = id(active_overlay) + 1;
+          if (p > 3) p = 1;
+          id(active_overlay) = p;
+          id(overlay_cursor) = 0;
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 1;'
+          then:
+            - display.page.show: volume_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 2;'
+          then:
+            - display.page.show: lights_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 3;'
+          then:
+            - display.page.show: music_page
+      - component.update: main_display
+
+  - id: overlay_prev
+    then:
+      - lambda: |-
+          int p = id(active_overlay) - 1;
+          if (p < 1) p = 3;
+          id(active_overlay) = p;
+          id(overlay_cursor) = 0;
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 1;'
+          then:
+            - display.page.show: volume_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 2;'
+          then:
+            - display.page.show: lights_page
+      - if:
+          condition:
+            lambda: 'return id(active_overlay) == 3;'
+          then:
+            - display.page.show: music_page
+      - component.update: main_display
+
+  - id: handle_overlay_tap
+    then:
+      - lambda: |-
+          const int W = id(main_display).get_width();
+          const int H = id(main_display).get_height();
+          const int tx = id(gs_start_x);
+          const int ty = id(gs_start_y);
+          const int hdr = H / 8;
+          int tap_idx = -1;
+
+          if (id(active_overlay) == 1) {
+            // Volume page: 5 rows. Left half = down, right half = up.
+            const int row_h = (H - hdr) / 5;
+            if (ty >= hdr) {
+              int idx = (ty - hdr) / row_h;
+              if (idx > 4) idx = 4;
+              // Encode: positive = vol up, negative = vol down
+              tap_idx = (tx > W / 2) ? idx : -(idx + 10);
+            }
+          } else if (id(active_overlay) == 2) {
+            // Lights page: 4 cols × 2 rows
+            const int col_w = W / 4;
+            const int row_h = (H - hdr) / 2;
+            if (ty >= hdr) {
+              int col = std::min(tx / col_w, 3);
+              int row = std::min((ty - hdr) / row_h, 1);
+              tap_idx = row * 4 + col;
+            }
+          } else if (id(active_overlay) == 3) {
+            // Music launcher: 2 cols × 3 rows
+            const int col_w = W / 2;
+            const int row_h = (H - hdr) / 3;
+            if (ty >= hdr) {
+              int col = std::min(tx / col_w, 1);
+              int row = std::min((ty - hdr) / row_h, 2);
+              tap_idx = row * 2 + col;
+            }
+          }
+          id(overlay_cursor) = tap_idx;
+      # Fire a single HA event with overlay type + tap index
+      # Node-RED / HA automation routes to the correct service call
+      - homeassistant.event:
+          event: esphome.overlay_tap
+          data:
+            node: ${name}
+            overlay: !lambda 'return to_string(id(active_overlay));'
+            tap: !lambda 'return to_string(id(overlay_cursor));'
+      - delay: 200ms
+      - component.update: main_display
+  # ── End overlay scripts ──────────────────────────────────────────
 
   - id: send_tts_uri_event
     parameters:
@@ -1438,6 +1638,28 @@ globals:
     initial_value: "0"
   - id: gs_start_ms
     type: uint32_t
+    restore_value: no
+    initial_value: "0"
+  # Double-tap detection globals
+  - id: double_tap_enabled
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: dt_tap_count
+    type: int
+    restore_value: no
+    initial_value: "0"
+  # Overlay page globals
+  - id: overlay_lock
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: active_overlay
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: overlay_cursor
+    type: int
     restore_value: no
     initial_value: "0"
 

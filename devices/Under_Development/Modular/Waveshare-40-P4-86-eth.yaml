@@ -21,9 +21,9 @@ substitutions:
   rotate_display: "0"
 
   # Spotify fonts scaled for 720px display
-  spotify_title_font_size: "48"
-  spotify_artist_font_size: "36"
-  spotify_small_font_size: "30"
+  spotify_title_font_size: "36"
+  spotify_artist_font_size: "28"
+  spotify_small_font_size: "22"
 
   startup_sound: "available" # (options are: available, Home_Connected, Home_Connected_Male, Computer_Ready, videogames, respect-and-enjoy-the-peace)
   clock_background_image: "tron" # (options are: clock, hacker, mission, Rolex, starrysky, waves, tron, chip, waterdrops, foundation)
@@ -117,6 +117,12 @@ packages:
 #    refresh: 0s
 #    files:
 #      - devices/Under_Development/Modular/spotify.yaml
+#  overlays:                # Volume / Lights / Music overlay pages (set vol*/blight* substitutions above)
+#    url: https://github.com/1liminal1/xiaozhi-esphome.git
+#    ref: main
+#    refresh: 0s
+#    files:
+#      - devices/Under_Development/Modular/overlays.yaml
 
 ### USE LOCAL MODULES (read description https://github.com/1liminal1/xiaozhi-esphome/blob/main/devices/Under_Development/Modular/README.md) #######
 

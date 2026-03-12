@@ -42,6 +42,9 @@ sensor:
     id: spotify_position
     entity_id: sensor.spotify_position
     internal: true
+    on_value:
+      then:
+        - lambda: 'id(spotify_last_update_ms) = millis();'
     
   - platform: homeassistant
     id: spotify_duration
@@ -112,6 +115,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
+  - id: spotify_last_update_ms
+    type: uint32_t
+    restore_value: no
+    initial_value: "0"
 
 script:
   - id: update_spotify_image
@@ -132,7 +139,7 @@ script:
                   if (url.substr(0, 7) == "http://" || url.substr(0, 8) == "https://") {
                     return url;
                   } else {
-                    return std::string("https://ha.liminal.net.au") + url;
+                    return std::string("${home_assistant_url}") + url;
                   }
 
   - id: open_spotify_page
@@ -166,10 +173,10 @@ switch:
     entity_category: config
 
 interval:
-  - interval: 10s
+  - interval: 3s
     then:
       - if:
           condition:
-            lambda: 'return id(show_spotify_page);'
+            lambda: 'return id(show_spotify_page) && !id(overlay_lock);'
           then:
             - component.update: main_display

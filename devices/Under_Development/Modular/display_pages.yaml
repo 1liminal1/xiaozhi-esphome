@@ -3274,6 +3274,7 @@
           const int W = it.get_width();
           const int H = it.get_height();
           const int CX = W / 2;
+          const bool LARGE = (W >= 400 && H >= 400);
 
           bool has_art = id(spotify_album_art_url).has_state() &&
                         id(spotify_album_art_url).state.length() > 10;
@@ -3282,51 +3283,345 @@
           if (has_art) {
             it.image(0, 0, id(spotify_album_art), ImageAlign::TOP_LEFT);
           } else {
-            // Placeholder - fill dark
             it.fill(id(spotify_dark));
             it.printf(CX, H / 2, id(spotify_title_font),
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // Dark overlay at bottom for text readability (proportional to screen height)
-          const int overlay_h = H / 5;
-          it.filled_rectangle(0, H - overlay_h, W, overlay_h, Color(0, 0, 0));
+          // --- Gradient overlay (fades from transparent to dark) ---
+          const int grad_h = LARGE ? H / 3 : H / 4;
+          const int grad_steps = LARGE ? 24 : 12;
+          for (int i = 0; i < grad_steps; i++) {
+            int alpha = (i * 220) / grad_steps;
+            int y = H - grad_h + (i * grad_h / grad_steps);
+            int row_h = grad_h / grad_steps + 1;
+            it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
+          }
+          // Solid dark at the very bottom for text area
+          const int text_h = LARGE ? H / 4 : H / 5;
+          it.filled_rectangle(0, H - text_h, W, text_h, Color(0, 0, 0));
 
-          // Song title
+          // --- Layout metrics (proportional) ---
+          const int margin = LARGE ? 30 : 12;
+          const int bar_h = LARGE ? 6 : 3;
+          const int bar_y = H - margin;
+          const int bar_x = margin;
+          const int bar_w = W - margin * 2;
+          const int time_y = bar_y - (LARGE ? 24 : 10);
+          const int title_y = time_y - (LARGE ? 52 : 20);
+          const int artist_y = title_y + (LARGE ? 36 : 14);
+          const int album_y = artist_y + (LARGE ? 30 : 12);
+          const int max_chars_title = LARGE ? 30 : 22;
+          const int max_chars_artist = LARGE ? 36 : 28;
+          const int max_chars_album = LARGE ? 40 : 30;
+
+          // --- Song title ---
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
             std::string title = id(spotify_title).state;
-            if (title.length() > 22) title = title.substr(0, 22) + "...";
-            it.printf(CX, H - overlay_h * 2 / 3, id(spotify_title_font),
+            if ((int)title.length() > max_chars_title) title = title.substr(0, max_chars_title) + "...";
+            it.printf(CX, title_y, id(spotify_title_font),
                     Color(255, 255, 255), TextAlign::CENTER, "%s", title.c_str());
           }
 
-          // Artist
+          // --- Artist ---
           if (id(spotify_artist).has_state() && id(spotify_artist).state.length() > 0) {
             std::string artist = id(spotify_artist).state;
-            if (artist.length() > 28) artist = artist.substr(0, 28) + "...";
-            it.printf(CX, H - overlay_h / 3, id(spotify_artist_font),
+            if ((int)artist.length() > max_chars_artist) artist = artist.substr(0, max_chars_artist) + "...";
+            it.printf(CX, artist_y, id(spotify_artist_font),
                     Color(200, 200, 200), TextAlign::CENTER, "%s", artist.c_str());
           }
 
-          // Progress bar (bottom, overlaid)
-          if (id(spotify_position).has_state() &&
-              id(spotify_duration).has_state() &&
-              id(spotify_duration).state > 0) {
-            float pos = id(spotify_position).state;
+          // --- Album name ---
+          if (id(spotify_album).has_state() && id(spotify_album).state.length() > 0) {
+            std::string album = id(spotify_album).state;
+            if ((int)album.length() > max_chars_album) album = album.substr(0, max_chars_album) + "...";
+            it.printf(CX, album_y, id(spotify_small_font),
+                    Color(150, 150, 150), TextAlign::CENTER, "%s", album.c_str());
+          }
+
+          // --- Progress bar with interpolation + time stamps ---
+          if (id(spotify_duration).has_state() && id(spotify_duration).state > 0) {
             float dur = id(spotify_duration).state;
+            float pos = 0.0f;
+
+            // Interpolate position between HA sensor updates
+            if (id(spotify_position).has_state()) {
+              pos = id(spotify_position).state;
+              if (id(spotify_is_playing).has_state() && id(spotify_is_playing).state) {
+                // Estimate current position based on time since last update
+                uint32_t now_ms = millis();
+                uint32_t last_ms = id(spotify_last_update_ms);
+                if (last_ms > 0 && now_ms > last_ms) {
+                  float elapsed = (now_ms - last_ms) / 1000.0f;
+                  pos = std::min(dur, pos + elapsed);
+                }
+              }
+            }
+
             float progress = std::min(1.0f, pos / dur);
 
-            const int bar_w = W - 40;
-            const int bar_x = 20;
-            const int bar_y = H - 6;
-            const int bar_h = 3;
-
-            // Background
+            // Bar background
             it.filled_rectangle(bar_x, bar_y, bar_w, bar_h, Color(80, 80, 80));
 
-            // Progress
+            // Bar progress
             int prog_w = (int)(bar_w * progress);
             if (prog_w > 0) {
               it.filled_rectangle(bar_x, bar_y, prog_w, bar_h, id(spotify_green));
             }
+
+            // Dot at progress position
+            if (LARGE && prog_w > 0) {
+              int dot_r = bar_h + 2;
+              it.filled_circle(bar_x + prog_w, bar_y + bar_h / 2, dot_r, id(spotify_green));
+            }
+
+            // Time stamps: elapsed / remaining
+            int pos_min = (int)pos / 60;
+            int pos_sec = (int)pos % 60;
+            int dur_min = (int)dur / 60;
+            int dur_sec = (int)dur % 60;
+            char time_left[16], time_right[16];
+            snprintf(time_left, sizeof(time_left), "%d:%02d", pos_min, pos_sec);
+            snprintf(time_right, sizeof(time_right), "%d:%02d", dur_min, dur_sec);
+
+            it.printf(bar_x, time_y, id(spotify_small_font),
+                    Color(150, 150, 150), TextAlign::BOTTOM_LEFT, "%s", time_left);
+            it.printf(bar_x + bar_w, time_y, id(spotify_small_font),
+                    Color(150, 150, 150), TextAlign::BOTTOM_RIGHT, "%s", time_right);
           }
+
+# ════════════════════════════════════════════════════════════════════
+#  OVERLAY PAGES — Volume · Lights · Music Launcher
+#  These pages are shown when overlay_lock == true.
+#  Entity data comes from overlays.yaml sensors.
+#  Tap / swipe interaction handled by core.yaml overlay scripts.
+# ════════════════════════════════════════════════════════════════════
+
+      - id: volume_page
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const bool LG = (W >= 400 && H >= 400);
+
+          // ── Solarized palette ──
+          const Color bg(0x00, 0x2B, 0x36);
+          const Color bg2(0x07, 0x36, 0x42);
+          const Color accent(0x26, 0x8B, 0xD2);
+          const Color txt(0x93, 0xA1, 0xA1);
+          const Color bright(0xFD, 0xF6, 0xE3);
+          const Color dim(0x58, 0x6E, 0x75);
+          const Color bar_bg(0x07, 0x36, 0x42);
+
+          it.fill(bg);
+
+          // ── Header ──
+          const int hdr = LG ? 80 : 32;
+          it.filled_rectangle(0, 0, W, hdr, bg2);
+          it.printf(W / 2, hdr / 2, id(overlay_title_font), bright,
+                    TextAlign::CENTER, "Volume");
+          // Page indicator dots
+          const int dot_r = LG ? 5 : 3;
+          const int dot_y = hdr / 2;
+          for (int i = 0; i < 3; i++) {
+            int dx = W / 2 + (i - 1) * (dot_r * 4);
+            if (i == 0) it.filled_circle(dx, dot_y + (LG ? 24 : 10), dot_r, accent);
+            else        it.filled_circle(dx, dot_y + (LG ? 24 : 10), dot_r, dim);
+          }
+
+          // ── Volume rows ──
+          const int body_h = H - hdr;
+          const int row_h = body_h / 5;
+          const int margin = LG ? 30 : 8;
+          const int bar_h = LG ? 24 : 10;
+          const int label_h = LG ? 20 : 10;
+
+          // Volume sensor array
+          esphome::sensor::Sensor* vols[] = {
+            id(vol1_level), id(vol2_level), id(vol3_level),
+            id(vol4_level), id(vol5_level)
+          };
+          static const char* const labels[] = {
+            "${vol1_label}", "${vol2_label}", "${vol3_label}",
+            "${vol4_label}", "${vol5_label}"
+          };
+
+          for (int i = 0; i < 5; i++) {
+            int ry = hdr + i * row_h;
+            float vol = 0.0f;
+            if (vols[i]->has_state()) vol = vols[i]->state;
+            if (vol < 0) vol = 0; if (vol > 1) vol = 1;
+
+            // Row separator
+            if (i > 0) it.horizontal_line(margin, ry, W - 2 * margin, dim);
+
+            // Label
+            int label_y = ry + (LG ? 18 : 6);
+            it.printf(margin, label_y, id(overlay_label_font), txt,
+                      TextAlign::TOP_LEFT, "%s", labels[i]);
+
+            // Volume bar background
+            int bar_y = label_y + label_h + (LG ? 12 : 4);
+            int bar_w = W - 2 * margin;
+            it.filled_rectangle(margin, bar_y, bar_w, bar_h, bar_bg);
+
+            // Volume bar fill
+            int fill_w = (int)(bar_w * vol);
+            if (fill_w > 0) {
+              it.filled_rectangle(margin, bar_y, fill_w, bar_h, accent);
+            }
+
+            // Percentage text
+            char pct[8];
+            snprintf(pct, sizeof(pct), "%d%%", (int)(vol * 100));
+            it.printf(W - margin, label_y, id(overlay_label_font), dim,
+                      TextAlign::TOP_RIGHT, "%s", pct);
+          }
+
+          // ── Footer hint ──
+          it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
+                    TextAlign::BOTTOM_CENTER, "tap -/+  swipe ←→ pages  ↓ close");
+
+      - id: lights_page
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const bool LG = (W >= 400 && H >= 400);
+
+          const Color bg(0x00, 0x2B, 0x36);
+          const Color bg2(0x07, 0x36, 0x42);
+          const Color accent(0x26, 0x8B, 0xD2);
+          const Color on_color(0x85, 0x99, 0x00);   // Solarized green
+          const Color off_color(0x58, 0x6E, 0x75);
+          const Color txt(0x93, 0xA1, 0xA1);
+          const Color bright(0xFD, 0xF6, 0xE3);
+          const Color dim(0x58, 0x6E, 0x75);
+
+          it.fill(bg);
+
+          // ── Header ──
+          const int hdr = LG ? 80 : 32;
+          it.filled_rectangle(0, 0, W, hdr, bg2);
+          it.printf(W / 2, hdr / 2, id(overlay_title_font), bright,
+                    TextAlign::CENTER, "Lights");
+          const int dot_r = LG ? 5 : 3;
+          for (int i = 0; i < 3; i++) {
+            int dx = W / 2 + (i - 1) * (dot_r * 4);
+            if (i == 1) it.filled_circle(dx, hdr / 2 + (LG ? 24 : 10), dot_r, accent);
+            else        it.filled_circle(dx, hdr / 2 + (LG ? 24 : 10), dot_r, dim);
+          }
+
+          // ── 4 columns × 2 rows grid ──
+          const int body_h = H - hdr;
+          const int col_w = W / 4;
+          const int row_h = body_h / 2;
+          const int circ_r = LG ? 36 : 16;
+
+          // Light state text sensors
+          esphome::text_sensor::TextSensor* states[] = {
+            id(blight1_state), id(blight2_state), id(blight3_state), id(blight4_state),
+            id(blight5_state), id(blight6_state), id(blight7_state), id(blight8_state)
+          };
+          static const char* const labels[] = {
+            "${blight1_label}", "${blight2_label}", "${blight3_label}", "${blight4_label}",
+            "${blight5_label}", "${blight6_label}", "${blight7_label}", "${blight8_label}"
+          };
+
+          for (int i = 0; i < 8; i++) {
+            int col = i % 4;
+            int row = i / 4;
+            int cx = col * col_w + col_w / 2;
+            int cy = hdr + row * row_h + row_h / 2 - (LG ? 12 : 4);
+
+            bool is_on = false;
+            if (states[i]->has_state()) is_on = (states[i]->state == "on");
+
+            // Light circle
+            Color fill = is_on ? on_color : off_color;
+            it.filled_circle(cx, cy, circ_r, fill);
+            it.circle(cx, cy, circ_r, accent);
+
+            // Power symbol (simple vertical line + arc approximation)
+            if (is_on) {
+              it.vertical_line(cx, cy - circ_r/2, circ_r, bright);
+            }
+
+            // Label below circle
+            int ly = cy + circ_r + (LG ? 10 : 4);
+            // Truncate label if too long for cell
+            it.printf(cx, ly, id(overlay_label_font), txt,
+                      TextAlign::TOP_CENTER, "%s", labels[i]);
+          }
+
+          // ── Footer ──
+          it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
+                    TextAlign::BOTTOM_CENTER, "tap toggle  swipe ←→ pages  ↓ close");
+
+      - id: music_page
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const bool LG = (W >= 400 && H >= 400);
+
+          const Color bg(0x00, 0x2B, 0x36);
+          const Color bg2(0x07, 0x36, 0x42);
+          const Color accent(0x26, 0x8B, 0xD2);
+          const Color txt(0x93, 0xA1, 0xA1);
+          const Color bright(0xFD, 0xF6, 0xE3);
+          const Color dim(0x58, 0x6E, 0x75);
+          const Color tile_bg(0x07, 0x36, 0x42);
+          const Color tile_border(0x26, 0x8B, 0xD2);
+
+          it.fill(bg);
+
+          // ── Header ──
+          const int hdr = LG ? 80 : 32;
+          it.filled_rectangle(0, 0, W, hdr, bg2);
+          it.printf(W / 2, hdr / 2, id(overlay_title_font), bright,
+                    TextAlign::CENTER, "Music");
+          const int dot_r = LG ? 5 : 3;
+          for (int i = 0; i < 3; i++) {
+            int dx = W / 2 + (i - 1) * (dot_r * 4);
+            if (i == 2) it.filled_circle(dx, hdr / 2 + (LG ? 24 : 10), dot_r, accent);
+            else        it.filled_circle(dx, hdr / 2 + (LG ? 24 : 10), dot_r, dim);
+          }
+
+          // ── 2 columns × 3 rows of playlist tiles ──
+          const int body_h = H - hdr;
+          const int col_w = W / 2;
+          const int row_h = body_h / 3;
+          const int pad = LG ? 12 : 4;
+
+          static const char* const tile_labels[] = {
+            "Chill", "Lounge", "Ambient", "Rock", "Jazz", "Radio"
+          };
+
+          for (int i = 0; i < 6; i++) {
+            int col = i % 2;
+            int row = i / 2;
+            int tx = col * col_w + pad;
+            int ty = hdr + row * row_h + pad;
+            int tw = col_w - 2 * pad;
+            int th = row_h - 2 * pad;
+
+            // Tile background
+            it.filled_rectangle(tx, ty, tw, th, tile_bg);
+            it.rectangle(tx, ty, tw, th, tile_border);
+
+            // Play triangle in center-left
+            int tri_cx = tx + (LG ? 40 : 16);
+            int tri_cy = ty + th / 2;
+            int tri_sz = LG ? 16 : 8;
+            // Simple filled triangle (play icon)
+            for (int dy = -tri_sz; dy <= tri_sz; dy++) {
+              int lw = tri_sz - std::abs(dy);
+              if (lw > 0) it.horizontal_line(tri_cx, tri_cy + dy, lw, accent);
+            }
+
+            // Tile label
+            it.printf(tx + (LG ? 70 : 28), ty + th / 2, id(overlay_label_font),
+                      bright, TextAlign::CENTER_LEFT, "%s", tile_labels[i]);
+          }
+
+          // ── Footer ──
+          it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
+                    TextAlign::BOTTOM_CENTER, "tap play  swipe ←→ pages  ↓ close");
