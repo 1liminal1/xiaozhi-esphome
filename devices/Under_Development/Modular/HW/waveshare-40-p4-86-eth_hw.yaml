@@ -136,6 +136,12 @@ touchscreen:
               if (is_left)  id(overlay_next).execute();
               if (is_right) id(overlay_prev).execute();
               if (is_down)  id(close_overlay).execute();
+            } else if (id(show_spotify_page) && is_down) {
+              // Swipe down always closes Spotify (no swipe_local needed)
+              id(close_spotify_page).execute();
+            } else if (is_up && id(overlay_enabled).state) {
+              // Swipe up always opens overlays when enabled (no swipe_local needed)
+              id(swipe_up_action).execute();
             } else if (id(swipe_local).state) {
               if (is_left)  id(swipe_left_action).execute();
               if (is_right) id(swipe_right_action).execute();

@@ -672,7 +672,7 @@ interval:
             id(idle_seconds)++;
             int delay_s = (int) id(clock_delay_seconds).state;
             if (delay_s <= 0) delay_s = 30;
-            if (id(idle_seconds) >= delay_s && !id(show_clock)) {
+            if (id(idle_seconds) >= delay_s && !id(show_clock) && !id(show_spotify_page) && !id(overlay_lock)) {
               id(show_clock) = true;
               id(show_clock_page).execute();
             }
@@ -682,7 +682,7 @@ interval:
           }
       - if:
           condition:
-            lambda: return id(show_clock) && id(clock_show_seconds).state;
+            lambda: return id(show_clock) && id(clock_show_seconds).state && !id(show_spotify_page) && !id(overlay_lock);
           then:
             - component.update: main_display
 
@@ -690,7 +690,7 @@ interval:
     then:
       - if:
           condition:
-            lambda: return id(show_clock) && !id(clock_show_seconds).state;
+            lambda: return id(show_clock) && !id(clock_show_seconds).state && !id(show_spotify_page) && !id(overlay_lock);
           then:
            - component.update: main_display
 
@@ -699,7 +699,7 @@ script:
     then:
       - if:
           condition:
-            lambda: return !id(init_in_progress) && !id(overlay_lock);
+            lambda: return !id(init_in_progress) && !id(overlay_lock) && !id(show_spotify_page);
           then:
             - if:
                 condition:

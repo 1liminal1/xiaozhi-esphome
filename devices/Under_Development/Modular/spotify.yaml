@@ -141,6 +141,7 @@ script:
                   } else {
                     return std::string("${home_assistant_url}") + url;
                   }
+                update: true
 
   - id: open_spotify_page
     mode: restart
@@ -173,7 +174,7 @@ switch:
     entity_category: config
 
 interval:
-  - interval: 3s
+  - interval: 1s
     then:
       - if:
           condition:
