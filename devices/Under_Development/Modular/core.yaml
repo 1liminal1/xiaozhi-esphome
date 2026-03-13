@@ -995,6 +995,8 @@ script:
               - not:
                   media_player.is_announcing:
           timeout: 5s
+      # Brief pause to let I2S driver fully release after speaker stops
+      - delay: 250ms
       - if:
           condition:
             and:

@@ -201,8 +201,8 @@ speaker:
 
 media_player:
   - platform: speaker
-    volume_min: 0.5
-    volume_max: 0.7 # don't go higher than 0.8
+    volume_min: 0.3
+    volume_max: 1.0  # NS4150B safely drives 8ohm 2W speaker at full DAC output
     name: None
     id: external_media_player
     announcement_pipeline:
