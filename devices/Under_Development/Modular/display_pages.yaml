@@ -3279,21 +3279,28 @@
           bool has_art = id(spotify_album_art_url).has_state() &&
                         id(spotify_album_art_url).state.length() > 10;
 
-          // Full-screen album art
+          // Full-screen album art (may be smaller than screen)
           if (has_art) {
-            it.image(0, 0, id(spotify_album_art), ImageAlign::TOP_LEFT);
+            // Get actual decoded image height
+            int ih = id(spotify_album_art)->get_height();
+            if (ih <= 0 || ih > H) ih = H;
+
+            // Center vertically if image doesn't fill screen
+            int y_off = (ih < H) ? (H - ih) / 2 : 0;
+            it.image(0, y_off, id(spotify_album_art), ImageAlign::TOP_LEFT);
           } else {
             it.fill(id(spotify_dark));
             it.printf(CX, H / 2, id(spotify_title_font),
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // --- Gradient overlay (quadratic fade — shows more art) ---
-          const int grad_h = LARGE ? 220 : H / 3;
-          const int grad_steps = LARGE ? 24 : 12;
+          // --- Gradient overlay (cubic fade from mid-screen down) ---
+          // Starts high to bridge the gap between art edge and text area
+          const int grad_h = LARGE ? H * 2 / 3 : H / 2;
+          const int grad_steps = LARGE ? 30 : 15;
           for (int i = 0; i < grad_steps; i++) {
             float t = (float)i / (float)grad_steps;
-            int alpha = (int)(t * t * 245);  // Quadratic: gentle top, steep bottom
+            int alpha = (int)(t * t * t * 250);  // Cubic: very gentle top, steep bottom
             int y = H - grad_h + (i * grad_h / grad_steps);
             int row_h = grad_h / grad_steps + 1;
             it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
