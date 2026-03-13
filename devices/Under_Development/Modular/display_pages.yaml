@@ -3288,29 +3288,27 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // --- Gradient overlay (fades from transparent to dark) ---
-          const int grad_h = LARGE ? 180 : H / 4;
-          const int grad_steps = LARGE ? 18 : 12;
+          // --- Gradient overlay (quadratic fade — shows more art) ---
+          const int grad_h = LARGE ? 220 : H / 3;
+          const int grad_steps = LARGE ? 24 : 12;
           for (int i = 0; i < grad_steps; i++) {
-            int alpha = (i * 220) / grad_steps;
+            float t = (float)i / (float)grad_steps;
+            int alpha = (int)(t * t * 245);  // Quadratic: gentle top, steep bottom
             int y = H - grad_h + (i * grad_h / grad_steps);
             int row_h = grad_h / grad_steps + 1;
             it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
           }
-          // Solid dark at the very bottom for text area
-          const int text_h = LARGE ? 100 : H / 5;
-          it.filled_rectangle(0, H - text_h, W, text_h, Color(0, 0, 0));
 
-          // --- Layout metrics (proportional) ---
-          const int margin = LARGE ? 22 : 12;
+          // --- Layout metrics (bottom-up with proper spacing) ---
+          const int margin = LARGE ? 20 : 12;
           const int bar_h = LARGE ? 5 : 3;
           const int bar_y = H - margin;
           const int bar_x = margin;
           const int bar_w = W - margin * 2;
-          const int time_y = bar_y - (LARGE ? 20 : 10);
-          const int title_y = time_y - (LARGE ? 44 : 20);
-          const int artist_y = title_y + (LARGE ? 30 : 14);
-          const int album_y = artist_y + (LARGE ? 24 : 12);
+          const int time_y = bar_y - (LARGE ? 14 : 10);
+          const int album_y = time_y - (LARGE ? 28 : 14);
+          const int artist_y = album_y - (LARGE ? 33 : 14);
+          const int title_y = artist_y - (LARGE ? 40 : 16);
           const int max_chars_title = LARGE ? 30 : 22;
           const int max_chars_artist = LARGE ? 36 : 28;
           const int max_chars_album = LARGE ? 40 : 30;
