@@ -3491,7 +3491,7 @@
 
           // ── Footer hint ──
           it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
-                    TextAlign::BOTTOM_CENTER, "tap -/+  swipe ←→ pages  ↓ close");
+                    TextAlign::BOTTOM_CENTER, "tap -/+  swipe \U000F004D\U000F0054 pages  \U000F0045 close");
 
       - id: lights_page
         lambda: |-
@@ -3566,7 +3566,7 @@
 
           // ── Footer ──
           it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
-                    TextAlign::BOTTOM_CENTER, "tap toggle  swipe ←→ pages  ↓ close");
+                    TextAlign::BOTTOM_CENTER, "tap toggle  swipe \U000F004D\U000F0054 pages  \U000F0045 close");
 
       - id: music_page
         lambda: |-
@@ -3636,4 +3636,4 @@
 
           // ── Footer ──
           it.printf(W / 2, H - (LG ? 12 : 4), id(overlay_label_font), dim,
-                    TextAlign::BOTTOM_CENTER, "tap play  swipe ←→ pages  ↓ close");
+                    TextAlign::BOTTOM_CENTER, "tap play  swipe \U000F004D\U000F0054 pages  \U000F0045 close");

@@ -106,15 +106,20 @@ font:
     glyphsets:
       - ${font_glyphsets}
     ignore_missing_glyphs: true
-  - file: fonts/Roboto-Regular.ttf
+  - file:
+      type: gfonts
+      family: ${font_family}
+      weight: 400
     id: overlay_label_font
     size: ${overlay_label_font_size}
     glyphsets:
       - ${font_glyphsets}
-    glyphs:
-      - "\u2190"
-      - "\u2192"
-      - "\u2193"
+    extras:
+      - file: fonts/materialdesignicons-webfont.ttf
+        glyphs:
+          - "\U000F004D"
+          - "\U000F0054"
+          - "\U000F0045"
     ignore_missing_glyphs: true
 
 # ── Overlay refresh interval ─────────────────────────────────────────
