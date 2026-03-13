@@ -1138,9 +1138,9 @@ script:
                   - delay: 150ms
                   - binary_sensor.template.publish: { id: touch_input, state: OFF }
                 else:
-                  # Double-tap mode: restart resets the 300 ms window each tap
+                  # Double-tap mode: restart resets the 400 ms window each tap
                   - lambda: 'id(dt_tap_count) += 1;'
-                  - delay: 300ms
+                  - delay: 400ms
                   - if:
                       condition:
                         lambda: 'return id(dt_tap_count) >= 2;'
