@@ -1255,8 +1255,16 @@ script:
       - lambda: |-
           const int W = id(main_display).get_width();
           const int H = id(main_display).get_height();
-          const int tx = id(gs_start_x);
-          const int ty = id(gs_start_y);
+          // Raw touch coords must be rotated to match display coordinates
+          const int ROT = ${rotate_display};
+          int tx, ty;
+          switch (ROT) {
+            case 0:   tx = id(gs_start_x); ty = id(gs_start_y); break;
+            case 90:  tx = id(gs_start_y); ty = W - 1 - id(gs_start_x); break;
+            case 180: tx = W - 1 - id(gs_start_x); ty = H - 1 - id(gs_start_y); break;
+            case 270: tx = H - 1 - id(gs_start_y); ty = id(gs_start_x); break;
+            default:  tx = id(gs_start_x); ty = id(gs_start_y); break;
+          }
           const int hdr = H / 8;
           int tap_idx = -1;
 
