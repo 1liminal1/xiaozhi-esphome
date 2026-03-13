@@ -985,16 +985,21 @@ script:
 
   - id: start_wake_word
     then:
-      - if:
+      # Wait for speaker / announcement to finish before grabbing the I2S bus
+      - wait_until:
           condition:
             and:
-              - not:
-                  voice_assistant.is_running:
               - not:
                   speaker.is_playing:
                     id: box_speaker
               - not:
                   media_player.is_announcing:
+          timeout: 5s
+      - if:
+          condition:
+            and:
+              - not:
+                  voice_assistant.is_running:
               - lambda: return id(wake_word_engine_location).current_option() == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
@@ -1004,11 +1009,6 @@ script:
             and:
               - not:
                   voice_assistant.is_running:
-              - not:
-                  speaker.is_playing:
-                    id: box_speaker
-              - not:
-                  media_player.is_announcing:
               - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(true);
@@ -1047,16 +1047,6 @@ script:
       priority: bool
       sound_file: "audio::AudioFile*"
     then:
-      - if:
-          condition:
-            microphone.is_capturing:
-          then:
-            - script.execute: stop_wake_word
-            - wait_until:
-                condition:
-                  not:
-                    microphone.is_capturing:
-                timeout: 500ms
       - lambda: |-
           id(playing_internal_sound) = true;
           if (priority) {
