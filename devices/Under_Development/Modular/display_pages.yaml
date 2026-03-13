@@ -3289,8 +3289,8 @@
           }
 
           // --- Gradient overlay (fades from transparent to dark) ---
-          const int grad_h = LARGE ? H / 3 : H / 4;
-          const int grad_steps = LARGE ? 24 : 12;
+          const int grad_h = LARGE ? 180 : H / 4;
+          const int grad_steps = LARGE ? 18 : 12;
           for (int i = 0; i < grad_steps; i++) {
             int alpha = (i * 220) / grad_steps;
             int y = H - grad_h + (i * grad_h / grad_steps);
@@ -3298,19 +3298,19 @@
             it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
           }
           // Solid dark at the very bottom for text area
-          const int text_h = LARGE ? H / 4 : H / 5;
+          const int text_h = LARGE ? 100 : H / 5;
           it.filled_rectangle(0, H - text_h, W, text_h, Color(0, 0, 0));
 
           // --- Layout metrics (proportional) ---
-          const int margin = LARGE ? 30 : 12;
-          const int bar_h = LARGE ? 6 : 3;
+          const int margin = LARGE ? 22 : 12;
+          const int bar_h = LARGE ? 5 : 3;
           const int bar_y = H - margin;
           const int bar_x = margin;
           const int bar_w = W - margin * 2;
-          const int time_y = bar_y - (LARGE ? 24 : 10);
-          const int title_y = time_y - (LARGE ? 52 : 20);
-          const int artist_y = title_y + (LARGE ? 36 : 14);
-          const int album_y = artist_y + (LARGE ? 30 : 12);
+          const int time_y = bar_y - (LARGE ? 20 : 10);
+          const int title_y = time_y - (LARGE ? 44 : 20);
+          const int artist_y = title_y + (LARGE ? 30 : 14);
+          const int album_y = artist_y + (LARGE ? 24 : 12);
           const int max_chars_title = LARGE ? 30 : 22;
           const int max_chars_artist = LARGE ? 36 : 28;
           const int max_chars_album = LARGE ? 40 : 30;
