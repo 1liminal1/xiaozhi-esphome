@@ -3432,28 +3432,37 @@
           const int bar_h = LG ? 24 : 10;
           const int label_h = LG ? 20 : 10;
 
-          // Volume sensor array
+          // Volume sensor + mute state arrays
           esphome::sensor::Sensor* vols[] = {
             id(vol1_level), id(vol2_level), id(vol3_level),
             id(vol4_level), id(vol5_level)
+          };
+          esphome::binary_sensor::BinarySensor* mutes[] = {
+            id(vol1_muted), id(vol2_muted), id(vol3_muted),
+            id(vol4_muted), id(vol5_muted)
           };
           static const char* const labels[] = {
             "${vol1_label}", "${vol2_label}", "${vol3_label}",
             "${vol4_label}", "${vol5_label}"
           };
 
+          const Color muted_bar(0x2A, 0x40, 0x48);   // dimmed accent for muted
+          const Color muted_txt(0x65, 0x7B, 0x83);    // solarized base00
+
           for (int i = 0; i < 5; i++) {
             int ry = hdr + i * row_h;
             float vol = 0.0f;
             if (vols[i]->has_state()) vol = vols[i]->state;
             if (vol < 0) vol = 0; if (vol > 1) vol = 1;
+            bool is_muted = mutes[i]->has_state() && mutes[i]->state;
 
             // Row separator
             if (i > 0) it.horizontal_line(margin, ry, W - 2 * margin, dim);
 
-            // Label
+            // Label (dimmed if muted)
             int label_y = ry + (LG ? 18 : 6);
-            it.printf(margin, label_y, id(overlay_label_font), txt,
+            it.printf(margin, label_y, id(overlay_label_font),
+                      is_muted ? muted_txt : txt,
                       TextAlign::TOP_LEFT, "%s", labels[i]);
 
             // Volume bar background
@@ -3461,17 +3470,23 @@
             int bar_w = W - 2 * margin;
             it.filled_rectangle(margin, bar_y, bar_w, bar_h, bar_bg);
 
-            // Volume bar fill
+            // Volume bar fill (dimmed colour when muted)
             int fill_w = (int)(bar_w * vol);
             if (fill_w > 0) {
-              it.filled_rectangle(margin, bar_y, fill_w, bar_h, accent);
+              it.filled_rectangle(margin, bar_y, fill_w, bar_h,
+                                  is_muted ? muted_bar : accent);
             }
 
-            // Percentage text
-            char pct[8];
-            snprintf(pct, sizeof(pct), "%d%%", (int)(vol * 100));
-            it.printf(W - margin, label_y, id(overlay_label_font), dim,
-                      TextAlign::TOP_RIGHT, "%s", pct);
+            // Status text: "Muted" or percentage
+            if (is_muted) {
+              it.printf(W - margin, label_y, id(overlay_label_font), muted_txt,
+                        TextAlign::TOP_RIGHT, "Muted");
+            } else {
+              char pct[8];
+              snprintf(pct, sizeof(pct), "%d%%", (int)(vol * 100));
+              it.printf(W - margin, label_y, id(overlay_label_font), dim,
+                        TextAlign::TOP_RIGHT, "%s", pct);
+            }
           }
 
           // ── Footer hint ──

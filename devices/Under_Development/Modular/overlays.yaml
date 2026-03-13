@@ -32,6 +32,34 @@ sensor:
     attribute: volume_level
     internal: true
 
+# ── HA sensors for volume mute state ───────────────────────────────
+binary_sensor:
+  - platform: homeassistant
+    id: vol1_muted
+    entity_id: ${vol1_entity}
+    attribute: is_volume_muted
+    internal: true
+  - platform: homeassistant
+    id: vol2_muted
+    entity_id: ${vol2_entity}
+    attribute: is_volume_muted
+    internal: true
+  - platform: homeassistant
+    id: vol3_muted
+    entity_id: ${vol3_entity}
+    attribute: is_volume_muted
+    internal: true
+  - platform: homeassistant
+    id: vol4_muted
+    entity_id: ${vol4_entity}
+    attribute: is_volume_muted
+    internal: true
+  - platform: homeassistant
+    id: vol5_muted
+    entity_id: ${vol5_entity}
+    attribute: is_volume_muted
+    internal: true
+
 # ── HA sensors for lights overlay ────────────────────────────────────
 text_sensor:
   - platform: homeassistant
