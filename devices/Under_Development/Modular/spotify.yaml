@@ -29,7 +29,7 @@ text_sensor:
 binary_sensor:
   - platform: homeassistant
     id: spotify_is_playing
-    entity_id: binary_sensor.spotify_playing
+    entity_id: binary_sensor.any_music_playing
     internal: true
 
 sensor:
@@ -139,7 +139,12 @@ script:
                   if (url.substr(0, 7) == "http://" || url.substr(0, 8) == "https://") {
                     return url;
                   } else {
-                    return std::string("${home_assistant_url}") + url;
+                    std::string base = "${home_assistant_url}";
+                    // Strip trailing slash to avoid double-slash
+                    while (!base.empty() && base.back() == '/') base.pop_back();
+                    // Ensure path starts with /
+                    if (url.empty() || url[0] != '/') url = "/" + url;
+                    return base + url;
                   }
                 update: true
 
