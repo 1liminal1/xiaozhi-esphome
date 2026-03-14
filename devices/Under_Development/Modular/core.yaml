@@ -578,6 +578,7 @@ voice_assistant:
               - not:
                   speaker.is_playing:
                     id: box_speaker
+        timeout: 10s
 
     - script.execute: start_wake_word
     - if:

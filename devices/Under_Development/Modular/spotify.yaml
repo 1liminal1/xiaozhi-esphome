@@ -33,29 +33,10 @@ text_sensor:
       then:
         - script.execute: update_spotify_image
 
-binary_sensor:
-  - platform: homeassistant
-    id: spotify_is_playing
-    entity_id: binary_sensor.any_music_playing
-    internal: true
-
 sensor:
   - platform: homeassistant
     id: spotify_volume
     entity_id: sensor.spotify_volume
-    internal: true
-    
-  - platform: homeassistant
-    id: spotify_position
-    entity_id: sensor.spotify_position
-    internal: true
-    on_value:
-      then:
-        - lambda: 'id(spotify_last_update_ms) = millis();'
-    
-  - platform: homeassistant
-    id: spotify_duration
-    entity_id: sensor.spotify_duration
     internal: true
 
 online_image:
@@ -122,10 +103,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: "false"
-  - id: spotify_last_update_ms
-    type: uint32_t
-    restore_value: no
-    initial_value: "0"
 
 script:
   - id: update_spotify_image
