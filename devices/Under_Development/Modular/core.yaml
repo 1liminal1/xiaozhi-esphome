@@ -986,7 +986,7 @@ script:
 
   - id: start_wake_word
     then:
-      # Wait for speaker / announcement to finish before grabbing the I2S bus
+      # Wait for speaker, announcement, AND VA pipeline to all finish
       - wait_until:
           condition:
             and:
@@ -995,27 +995,26 @@ script:
                     id: box_speaker
               - not:
                   media_player.is_announcing:
-          timeout: 5s
-      # Brief pause to let I2S driver fully release after speaker stops
-      - delay: 250ms
-      - if:
-          condition:
-            and:
               - not:
                   voice_assistant.is_running:
-              - lambda: return id(wake_word_engine_location).current_option() == "On device";
+          timeout: 10s
+      # Brief pause to let I2S driver fully release after speaker stops
+      - delay: 250ms
+      - lambda: ESP_LOGD("wake", "start_wake_word: engine=%s", id(wake_word_engine_location).current_option().c_str());
+      - if:
+          condition:
+            lambda: return id(wake_word_engine_location).current_option() == "On device";
           then:
             - lambda: id(va).set_use_wake_word(false);
             - micro_wake_word.start:
+            - lambda: ESP_LOGD("wake", "micro_wake_word started");
       - if:
           condition:
-            and:
-              - not:
-                  voice_assistant.is_running:
-              - lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
+            lambda: return id(wake_word_engine_location).current_option() == "In Home Assistant";
           then:
             - lambda: id(va).set_use_wake_word(true);
             - voice_assistant.start_continuous:
+            - lambda: ESP_LOGD("wake", "voice_assistant continuous started");
 
   - id: stop_wake_word
     then:
