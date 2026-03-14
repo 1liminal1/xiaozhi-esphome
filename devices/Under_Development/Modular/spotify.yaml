@@ -7,6 +7,13 @@ text_sensor:
     id: spotify_title
     entity_id: sensor.spotify_title
     internal: true
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(show_spotify_page);'
+            then:
+              - component.update: main_display
     
   - platform: homeassistant
     id: spotify_artist
@@ -178,11 +185,5 @@ switch:
     restore_mode: RESTORE_DEFAULT_OFF
     entity_category: config
 
-interval:
-  - interval: 1s
-    then:
-      - if:
-          condition:
-            lambda: 'return id(show_spotify_page) && !id(overlay_lock);'
-          then:
-            - component.update: main_display
+## 1-second polling interval removed — no longer needed without the progress bar.
+## Display now updates on track change (spotify_title on_value) and album art download.

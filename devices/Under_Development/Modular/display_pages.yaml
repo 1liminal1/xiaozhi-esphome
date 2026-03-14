@@ -3288,29 +3288,25 @@
                     Color(100, 100, 100), TextAlign::CENTER, "♪");
           }
 
-          // --- Gradient: just enough to make text readable over art ---
-          const int grad_h = LARGE ? 160 : H / 4;
-          const int grad_steps = LARGE ? 20 : 12;
-          for (int i = 0; i < grad_steps; i++) {
-            int alpha = (i * 230) / grad_steps;
-            int y = H - grad_h + (i * grad_h / grad_steps);
-            int row_h = grad_h / grad_steps + 1;
-            it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
-          }
-
-          // --- Layout metrics (bottom-up with proper spacing) ---
-          const int margin = LARGE ? 20 : 12;
-          const int bar_h = LARGE ? 5 : 3;
-          const int bar_y = H - margin;
-          const int bar_x = margin;
-          const int bar_w = W - margin * 2;
-          const int time_y = bar_y - (LARGE ? 14 : 10);
-          const int album_y = time_y - (LARGE ? 28 : 14);
-          const int artist_y = album_y - (LARGE ? 33 : 14);
-          const int title_y = artist_y - (LARGE ? 40 : 16);
+          // --- Layout: text at the bottom, album art fills the rest ---
+          const int margin = LARGE ? 24 : 12;
           const int max_chars_title = LARGE ? 30 : 22;
           const int max_chars_artist = LARGE ? 36 : 28;
           const int max_chars_album = LARGE ? 40 : 30;
+          const int album_y  = H - margin;
+          const int artist_y = album_y  - (LARGE ? 30 : 14);
+          const int title_y  = artist_y - (LARGE ? 36 : 16);
+
+          // --- Gradient: tight band just above the title for readability ---
+          const int grad_h = LARGE ? 120 : H / 5;
+          const int grad_steps = LARGE ? 16 : 10;
+          const int grad_top = H - grad_h;
+          for (int i = 0; i < grad_steps; i++) {
+            int alpha = (i * 230) / grad_steps;
+            int y = grad_top + (i * grad_h / grad_steps);
+            int row_h = grad_h / grad_steps + 1;
+            it.filled_rectangle(0, y, W, row_h, Color(0, 0, 0, alpha));
+          }
 
           // --- Song title ---
           if (id(spotify_title).has_state() && id(spotify_title).state.length() > 0) {
@@ -3334,57 +3330,6 @@
             if ((int)album.length() > max_chars_album) album = album.substr(0, max_chars_album) + "...";
             it.printf(CX, album_y, id(spotify_small_font),
                     Color(150, 150, 150), TextAlign::CENTER, "%s", album.c_str());
-          }
-
-          // --- Progress bar with interpolation + time stamps ---
-          if (id(spotify_duration).has_state() && id(spotify_duration).state > 0) {
-            float dur = id(spotify_duration).state;
-            float pos = 0.0f;
-
-            // Interpolate position between HA sensor updates
-            if (id(spotify_position).has_state()) {
-              pos = id(spotify_position).state;
-              if (id(spotify_is_playing).has_state() && id(spotify_is_playing).state) {
-                // Estimate current position based on time since last update
-                uint32_t now_ms = millis();
-                uint32_t last_ms = id(spotify_last_update_ms);
-                if (last_ms > 0 && now_ms > last_ms) {
-                  float elapsed = (now_ms - last_ms) / 1000.0f;
-                  pos = std::min(dur, pos + elapsed);
-                }
-              }
-            }
-
-            float progress = std::min(1.0f, pos / dur);
-
-            // Bar background
-            it.filled_rectangle(bar_x, bar_y, bar_w, bar_h, Color(80, 80, 80));
-
-            // Bar progress
-            int prog_w = (int)(bar_w * progress);
-            if (prog_w > 0) {
-              it.filled_rectangle(bar_x, bar_y, prog_w, bar_h, id(spotify_green));
-            }
-
-            // Dot at progress position
-            if (LARGE && prog_w > 0) {
-              int dot_r = bar_h + 2;
-              it.filled_circle(bar_x + prog_w, bar_y + bar_h / 2, dot_r, id(spotify_green));
-            }
-
-            // Time stamps: elapsed / remaining
-            int pos_min = (int)pos / 60;
-            int pos_sec = (int)pos % 60;
-            int dur_min = (int)dur / 60;
-            int dur_sec = (int)dur % 60;
-            char time_left[16], time_right[16];
-            snprintf(time_left, sizeof(time_left), "%d:%02d", pos_min, pos_sec);
-            snprintf(time_right, sizeof(time_right), "%d:%02d", dur_min, dur_sec);
-
-            it.printf(bar_x, time_y, id(spotify_small_font),
-                    Color(150, 150, 150), TextAlign::BOTTOM_LEFT, "%s", time_left);
-            it.printf(bar_x + bar_w, time_y, id(spotify_small_font),
-                    Color(150, 150, 150), TextAlign::BOTTOM_RIGHT, "%s", time_right);
           }
 
 # ════════════════════════════════════════════════════════════════════
