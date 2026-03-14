@@ -1000,7 +1000,8 @@ script:
           timeout: 10s
       # Brief pause to let I2S driver fully release after speaker stops
       - delay: 250ms
-      - lambda: ESP_LOGD("wake", "start_wake_word: engine=%s", id(wake_word_engine_location).current_option().c_str());
+      - lambda: |-
+          ESP_LOGD("wake", "start_wake_word engine=%s", id(wake_word_engine_location).current_option().c_str());
       - if:
           condition:
             lambda: return id(wake_word_engine_location).current_option() == "On device";
