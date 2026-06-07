@@ -240,9 +240,9 @@ interval:
           then:
             - script.execute: printer_show
 
-# ── Pages (merged into main_display.pages by id) ────────────────────────
+# ── Pages (appended to main_display.pages via !extend) ──────────────────
 display:
-  - id: main_display
+  - id: !extend main_display
     pages:
       # ============================ OVERVIEW ============================
       - id: printers_overview
