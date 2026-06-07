@@ -240,7 +240,24 @@ interval:
                      && !id(init_in_progress)
                      && id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
           then:
-            - script.execute: printer_show
+            - lambda: |-
+                // Only re-render when the page is wrong (recover from draw_display),
+                // otherwise refresh data at a light cadence — never every tick.
+                esphome::display::DisplayPage* want;
+                switch (id(printer_idx)) {
+                  case 0:  want = printers_overview; break;
+                  case 1:  want = printers_sound;    break;
+                  default: want = printers_detail;   break;
+                }
+                static uint8_t tick = 0;
+                if (id(main_display).get_active_page() != want) {
+                  id(main_display).show_page(want);
+                  id(main_display).update();
+                  tick = 0;
+                } else if (++tick >= 5) {
+                  tick = 0;
+                  id(main_display).update();
+                }
 
 # ── Pages (appended to main_display.pages via !extend) ──────────────────
 display:
