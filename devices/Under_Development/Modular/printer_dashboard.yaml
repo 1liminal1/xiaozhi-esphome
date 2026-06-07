@@ -1,0 +1,554 @@
+# ============================================================================
+# FILE: devices/Under_Development/Modular/printer_dashboard.yaml
+# Study Printer Dashboard — Bambu fleet (HD2 / H2D / X1 Carbon) + Sound page.
+# Pages appended to main_display via id-merge. Navigation: swipe left/right.
+# Home (idle) = printers_overview, asserted by a 1s interval.
+#
+# Reuses vol1..vol5 room volume sensors from overlays.yaml for the Sound page.
+# Requires core + hw + spotify + overlays packages (shared display_pages deps).
+# ============================================================================
+
+# ── Printer numeric sensors ─────────────────────────────────────────────
+sensor:
+  # HD2
+  - { platform: homeassistant, id: p_hd2_progress, entity_id: sensor.hd2_print_progress, internal: true }
+  - { platform: homeassistant, id: p_hd2_layer,    entity_id: sensor.hd2_current_layer, internal: true }
+  - { platform: homeassistant, id: p_hd2_layers,   entity_id: sensor.hd2_total_layer_count, internal: true }
+  - { platform: homeassistant, id: p_hd2_noz,      entity_id: sensor.hd2_nozzle_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd2_nozt,     entity_id: sensor.hd2_nozzle_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd2_bed,      entity_id: sensor.hd2_bed_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd2_bedt,     entity_id: sensor.hd2_bed_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd2_cham,     entity_id: sensor.hd2_chamber_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd2_ams,      entity_id: sensor.hd2_ams_humidity, internal: true }
+  # H2D (entity prefix hd1)
+  - { platform: homeassistant, id: p_hd1_progress, entity_id: sensor.hd1_print_progress, internal: true }
+  - { platform: homeassistant, id: p_hd1_layer,    entity_id: sensor.hd1_current_layer, internal: true }
+  - { platform: homeassistant, id: p_hd1_layers,   entity_id: sensor.hd1_total_layer_count, internal: true }
+  - { platform: homeassistant, id: p_hd1_noz,      entity_id: sensor.hd1_nozzle_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd1_nozt,     entity_id: sensor.hd1_nozzle_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd1_bed,      entity_id: sensor.hd1_bed_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd1_bedt,     entity_id: sensor.hd1_bed_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd1_cham,     entity_id: sensor.hd1_chamber_temperature, internal: true }
+  - { platform: homeassistant, id: p_hd1_ams,      entity_id: sensor.hd1_ams_humidity, internal: true }
+  # X1 Carbon
+  - { platform: homeassistant, id: p_x1_progress,  entity_id: sensor.x1_carbon_print_progress, internal: true }
+  - { platform: homeassistant, id: p_x1_layer,     entity_id: sensor.x1_carbon_current_layer, internal: true }
+  - { platform: homeassistant, id: p_x1_layers,    entity_id: sensor.x1_carbon_total_layer_count, internal: true }
+  - { platform: homeassistant, id: p_x1_noz,       entity_id: sensor.x1_carbon_nozzle_temperature, internal: true }
+  - { platform: homeassistant, id: p_x1_nozt,      entity_id: sensor.x1_carbon_nozzle_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_x1_bed,       entity_id: sensor.x1_carbon_bed_temperature, internal: true }
+  - { platform: homeassistant, id: p_x1_bedt,      entity_id: sensor.x1_carbon_bed_target_temperature, internal: true }
+  - { platform: homeassistant, id: p_x1_cham,      entity_id: sensor.x1_carbon_chamber_temperature, internal: true }
+  - { platform: homeassistant, id: p_x1_ams,       entity_id: sensor.ams_0_x1_carbon_humidity_level, internal: true }
+  # Sound — Home group master volume
+  - { platform: homeassistant, id: p_home_vol,     entity_id: media_player.home, attribute: volume_level, internal: true }
+
+# ── Printer + now-playing text sensors ──────────────────────────────────
+text_sensor:
+  - { platform: homeassistant, id: p_hd2_tray,  entity_id: sensor.hd2_active_tray, internal: true }
+  - { platform: homeassistant, id: p_hd2_stage, entity_id: sensor.hd2_current_stage, internal: true }
+  - { platform: homeassistant, id: p_hd2_task,  entity_id: sensor.hd2_task_name, internal: true }
+  - { platform: homeassistant, id: p_hd2_eta,   entity_id: sensor.hd2_end, internal: true }
+  - { platform: homeassistant, id: p_hd2_rem,   entity_id: sensor.hd2_remaining, internal: true }
+
+  - { platform: homeassistant, id: p_hd1_tray,  entity_id: sensor.hd1_active_tray, internal: true }
+  - { platform: homeassistant, id: p_hd1_stage, entity_id: sensor.hd1_current_stage, internal: true }
+  - { platform: homeassistant, id: p_hd1_task,  entity_id: sensor.hd1_task_name, internal: true }
+  - { platform: homeassistant, id: p_hd1_eta,   entity_id: sensor.hd1_end, internal: true }
+  - { platform: homeassistant, id: p_hd1_rem,   entity_id: sensor.hd1_remaining, internal: true }
+
+  - { platform: homeassistant, id: p_x1_tray,   entity_id: sensor.x1_carbon_active_tray, internal: true }
+  - { platform: homeassistant, id: p_x1_stage,  entity_id: sensor.x1_carbon_current_stage, internal: true }
+  - { platform: homeassistant, id: p_x1_task,   entity_id: sensor.x1_carbon_task_name, internal: true }
+  - { platform: homeassistant, id: p_x1_eta,    entity_id: sensor.x1_carbon_end_time_formatted, internal: true }
+  - { platform: homeassistant, id: p_x1_rem,    entity_id: sensor.x1_carbon_remaining_time_formatted, internal: true }
+
+  # Now Playing (Home group)
+  - { platform: homeassistant, id: p_np_title,  entity_id: media_player.home, attribute: media_title, internal: true }
+  - { platform: homeassistant, id: p_np_artist, entity_id: media_player.home, attribute: media_artist, internal: true }
+  - platform: homeassistant
+    id: p_np_state
+    entity_id: media_player.home
+    internal: true
+  - platform: homeassistant
+    id: p_np_art
+    entity_id: media_player.home
+    attribute: entity_picture
+    internal: true
+    on_value:
+      then:
+        - script.execute: update_np_image
+
+# ── Printer binary sensors (online / printing / power toggle / chamber light) ─
+binary_sensor:
+  - { platform: homeassistant, id: p_hd2_online,   entity_id: binary_sensor.hd2_online, internal: true }
+  - { platform: homeassistant, id: p_hd2_printing, entity_id: binary_sensor.hd2_printing, internal: true }
+  - { platform: homeassistant, id: p_hd2_power,    entity_id: input_boolean.hd2, internal: true }
+  - { platform: homeassistant, id: p_hd2_light,    entity_id: light.hd2_chamber_light, internal: true }
+
+  - { platform: homeassistant, id: p_hd1_online,   entity_id: binary_sensor.hd1_online, internal: true }
+  - { platform: homeassistant, id: p_hd1_printing, entity_id: binary_sensor.hd1_printing, internal: true }
+  - { platform: homeassistant, id: p_hd1_power,    entity_id: input_boolean.hd1, internal: true }
+  - { platform: homeassistant, id: p_hd1_light,    entity_id: light.hd1_chamber_light, internal: true }
+
+  - { platform: homeassistant, id: p_x1_online,    entity_id: binary_sensor.x1_carbon_online, internal: true }
+  - { platform: homeassistant, id: p_x1_printing,  entity_id: binary_sensor.x1_carbon_printing, internal: true }
+  - { platform: homeassistant, id: p_x1_power,     entity_id: input_boolean.x1_carbon, internal: true }
+  - { platform: homeassistant, id: p_x1_light,     entity_id: light.x1_carbon_chamber_light, internal: true }
+
+  # Home group mute (for Sound page master)
+  - { platform: homeassistant, id: p_home_muted, entity_id: media_player.home, attribute: is_volume_muted, internal: true }
+
+  # ── Swipe navigation (extend the core swipe sensors, additive) ──
+  - id: !extend swipe_left
+    on_press:
+      - if:
+          condition:
+            lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
+          then:
+            - script.execute: printer_next
+  - id: !extend swipe_right
+    on_press:
+      - if:
+          condition:
+            lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
+          then:
+            - script.execute: printer_prev
+
+# ── Now-playing album art ───────────────────────────────────────────────
+online_image:
+  - id: np_album_art
+    url: https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0
+    resize: 300x300
+    format: JPEG
+    type: RGB565
+    update_interval: never
+
+# ── Fonts ───────────────────────────────────────────────────────────────
+font:
+  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+    id: pf_title
+    size: 34
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+    id: pf_name
+    size: 30
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+    id: pf_big
+    size: 54
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+    id: pf_value
+    size: 30
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+  - file: { type: gfonts, family: ${font_family}, weight: 600 }
+    id: pf_label
+    size: 19
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+  - file: { type: gfonts, family: ${font_family}, weight: 400 }
+    id: pf_small
+    size: 17
+    glyphsets: [ "${font_glyphsets}" ]
+    ignore_missing_glyphs: true
+
+# ── Globals ─────────────────────────────────────────────────────────────
+globals:
+  - id: printer_ui
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  - id: printer_idx
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+# ── Navigation scripts ──────────────────────────────────────────────────
+script:
+  - id: printer_show
+    then:
+      - lambda: |-
+          switch (id(printer_idx)) {
+            case 0:  id(main_display).show_page(printers_overview); break;
+            case 1:  id(main_display).show_page(printers_sound);    break;
+            default: id(main_display).show_page(printers_detail);   break;
+          }
+          id(main_display).update();
+
+  - id: printer_next
+    then:
+      - lambda: 'int n = id(printer_idx) + 1; if (n > 4) n = 0; id(printer_idx) = n;'
+      - script.execute: reset_screensaver
+      - script.execute: printer_show
+
+  - id: printer_prev
+    then:
+      - lambda: 'int n = id(printer_idx) - 1; if (n < 0) n = 4; id(printer_idx) = n;'
+      - script.execute: reset_screensaver
+      - script.execute: printer_show
+
+  - id: update_np_image
+    then:
+      - if:
+          condition:
+            lambda: 'return id(p_np_art).has_state() && id(p_np_art).state.length() > 10;'
+          then:
+            - online_image.set_url:
+                id: np_album_art
+                url: !lambda |-
+                  std::string url = id(p_np_art).state;
+                  if (url.substr(0, 4) == "http") return url;
+                  std::string base = "${home_assistant_url}";
+                  while (!base.empty() && base.back() == '/') base.pop_back();
+                  if (url.empty() || url[0] != '/') url = "/" + url;
+                  return base + url;
+                update: true
+
+# ── Home-screen assertion + live refresh (idle only) ────────────────────
+interval:
+  - interval: 1s
+    then:
+      - if:
+          condition:
+            lambda: |-
+              return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page)
+                     && !id(init_in_progress)
+                     && id(voice_assistant_phase) == ${voice_assist_idle_phase_id};
+          then:
+            - script.execute: printer_show
+
+# ── Pages (merged into main_display.pages by id) ────────────────────────
+display:
+  - id: main_display
+    pages:
+      # ============================ OVERVIEW ============================
+      - id: printers_overview
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const Color bg(0x00,0x2B,0x36), card(0x07,0x36,0x42);
+          const Color bright(0xFD,0xF6,0xE3), txt(0x93,0xA1,0xA1), base0(0x83,0x94,0x96);
+          const Color dim(0x58,0x6E,0x75), cyan(0x2A,0xA1,0x98), green(0x85,0x99,0x00);
+          const Color yellow(0xB5,0x89,0x00), orange(0xCB,0x4B,0x16), track(0x03,0x1F,0x26);
+
+          it.fill(bg);
+
+          // ── Header: "Study Printers" (Printers in orange) ──
+          const int pad = 28;
+          it.printf(pad, 30, id(pf_title), bright, TextAlign::TOP_LEFT, "Study ");
+          int bx, by, bw, bh;
+          it.get_text_bounds(pad, 30, "Study ", id(pf_title), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+          it.printf(pad + bw, 30, id(pf_title), orange, TextAlign::TOP_LEFT, "Printers");
+
+          // ── Printer data arrays ──
+          esphome::sensor::Sensor* prog[3]   = { id(p_hd2_progress), id(p_hd1_progress), id(p_x1_progress) };
+          esphome::sensor::Sensor* layer[3]  = { id(p_hd2_layer),    id(p_hd1_layer),    id(p_x1_layer) };
+          esphome::sensor::Sensor* layers[3] = { id(p_hd2_layers),   id(p_hd1_layers),   id(p_x1_layers) };
+          esphome::sensor::Sensor* bed[3]    = { id(p_hd2_bed),      id(p_hd1_bed),      id(p_x1_bed) };
+          esphome::sensor::Sensor* noz[3]    = { id(p_hd2_noz),      id(p_hd1_noz),      id(p_x1_noz) };
+          esphome::text_sensor::TextSensor* tray[3] = { id(p_hd2_tray), id(p_hd1_tray), id(p_x1_tray) };
+          esphome::text_sensor::TextSensor* rem[3]  = { id(p_hd2_rem),  id(p_hd1_rem),  id(p_x1_rem) };
+          esphome::binary_sensor::BinarySensor* online[3]   = { id(p_hd2_online),   id(p_hd1_online),   id(p_x1_online) };
+          esphome::binary_sensor::BinarySensor* printing[3] = { id(p_hd2_printing), id(p_hd1_printing), id(p_x1_printing) };
+          esphome::binary_sensor::BinarySensor* power[3]    = { id(p_hd2_power),    id(p_hd1_power),    id(p_x1_power) };
+          static const char* const names[3] = { "HD2", "H2D", "X1 Carbon" };
+
+          const int cw = W - 2 * pad;
+          const int cx = pad;
+          const int card_h = 150;
+          const int gap = 14;
+          int cy = 92;
+
+          for (int i = 0; i < 3; i++, cy += card_h + gap) {
+            bool on   = online[i]->has_state() && online[i]->state;
+            bool prn  = printing[i]->has_state() && printing[i]->state;
+            Color status = on ? (prn ? green : yellow) : dim;
+            const char* status_txt = on ? (prn ? "PRINTING" : "IDLE") : "OFFLINE";
+
+            // Card + left accent
+            it.filled_rounded_rectangle(cx, cy, cw, card_h, 18, card);
+            it.filled_rounded_rectangle(cx, cy, 7, card_h, 3, status);
+
+            // Name + status badge
+            it.printf(cx + 24, cy + 14, id(pf_name), bright, TextAlign::TOP_LEFT, "%s", names[i]);
+            int nx, ny, nw, nh;
+            it.get_text_bounds(cx + 24, cy + 14, names[i], id(pf_name), TextAlign::TOP_LEFT, &nx, &ny, &nw, &nh);
+            it.printf(cx + 24 + nw + 16, cy + 22, id(pf_label), status, TextAlign::TOP_LEFT, "%s", status_txt);
+
+            // Sub line: task + layers
+            char sub[64];
+            std::string task = (tray[i]->has_state()) ? tray[i]->state : "";
+            int cl = layer[i]->has_state() ? (int)layer[i]->state : 0;
+            int tl = layers[i]->has_state() ? (int)layers[i]->state : 0;
+            if (prn && tl > 0) snprintf(sub, sizeof(sub), "%s  ·  layer %d/%d", task.c_str(), cl, tl);
+            else               snprintf(sub, sizeof(sub), "%s", on ? "Ready" : "Offline");
+            it.printf(cx + 24, cy + 50, id(pf_small), base0, TextAlign::TOP_LEFT, "%s", sub);
+
+            // Progress bar + %
+            int p = prog[i]->has_state() ? (int)prog[i]->state : 0;
+            if (p < 0) p = 0; if (p > 100) p = 100;
+            const int bar_x = cx + 24;
+            const int bar_y = cy + 84;
+            const int bar_w = cw - 24 - 250;
+            it.filled_rounded_rectangle(bar_x, bar_y, bar_w, 12, 6, track);
+            int fill = bar_w * p / 100;
+            if (fill > 4) it.filled_rounded_rectangle(bar_x, bar_y, fill, 12, 6, prn ? cyan : dim);
+            char pct[8]; snprintf(pct, sizeof(pct), "%d%%", p);
+            it.printf(bar_x + bar_w + 18, cy + 78, id(pf_value), bright, TextAlign::TOP_LEFT, "%s", pct);
+
+            // Power toggle (right side)
+            bool pw = power[i]->has_state() && power[i]->state;
+            const int tgl_w = 74, tgl_h = 40;
+            const int tgl_x = cx + cw - 24 - tgl_w;
+            const int tgl_y = cy + 70;
+            it.filled_rounded_rectangle(tgl_x, tgl_y, tgl_w, tgl_h, tgl_h / 2, pw ? green : track);
+            int knob = pw ? (tgl_x + tgl_w - tgl_h / 2) : (tgl_x + tgl_h / 2);
+            it.filled_circle(knob, tgl_y + tgl_h / 2, tgl_h / 2 - 4, pw ? bright : txt);
+            it.printf(tgl_x + tgl_w / 2, tgl_y + tgl_h + 4, id(pf_small), dim, TextAlign::TOP_CENTER, "Power");
+
+            // Chips line: remaining / bed / nozzle
+            int chx = cx + 24;
+            const int chy = cy + 112;
+            char buf[40];
+            // remaining
+            if (prn && rem[i]->has_state() && rem[i]->state.length() > 0) {
+              snprintf(buf, sizeof(buf), "%s left", rem[i]->state.c_str());
+            } else { snprintf(buf, sizeof(buf), "—"); }
+            int tw, th, tx2, ty2;
+            it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
+            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
+            chx += tw + 22 + 10;
+            // bed
+            int bv = bed[i]->has_state() ? (int)bed[i]->state : 0;
+            snprintf(buf, sizeof(buf), "Bed %d°", bv);
+            it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
+            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
+            chx += tw + 22 + 10;
+            // nozzle
+            int nv = noz[i]->has_state() ? (int)noz[i]->state : 0;
+            snprintf(buf, sizeof(buf), "Noz %d°", nv);
+            it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
+            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
+          }
+
+          // Page dots (5)
+          const int dy = H - 26;
+          for (int i = 0; i < 5; i++) {
+            int dx = W / 2 + (i - 2) * 22;
+            if (i == 0) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            else        it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
+          }
+
+      # ============================ SOUND ============================
+      - id: printers_sound
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const Color bg(0x00,0x2B,0x36), card(0x07,0x36,0x42);
+          const Color bright(0xFD,0xF6,0xE3), txt(0x93,0xA1,0xA1), base0(0x83,0x94,0x96);
+          const Color dim(0x58,0x6E,0x75), cyan(0x2A,0xA1,0x98), red(0xDC,0x32,0x2F);
+          const Color track(0x03,0x1F,0x26), orange(0xCB,0x4B,0x16);
+          const int pad = 28;
+
+          it.fill(bg);
+
+          // Header
+          it.printf(pad, 30, id(pf_title), bright, TextAlign::TOP_LEFT, "Study ");
+          int bx, by, bw, bh;
+          it.get_text_bounds(pad, 30, "Study ", id(pf_title), TextAlign::TOP_LEFT, &bx, &by, &bw, &bh);
+          it.printf(pad + bw, 30, id(pf_title), cyan, TextAlign::TOP_LEFT, "Sound");
+
+          // Now-playing card
+          const int npy = 92, np_h = 186;
+          it.filled_rounded_rectangle(pad, npy, W - 2 * pad, np_h, 18, card);
+          // Album art
+          const int art = 150, ax = pad + 18, ay = npy + 18;
+          bool has_art = id(p_np_art).has_state() && id(p_np_art).state.length() > 10;
+          if (has_art) {
+            it.image(ax, ay, id(np_album_art), ImageAlign::TOP_LEFT);
+          } else {
+            it.filled_rounded_rectangle(ax, ay, art, art, 14, Color(0x26,0x8B,0xD2));
+            it.printf(ax + art / 2, ay + art / 2, id(pf_big), bright, TextAlign::CENTER, "%s", "♪");
+          }
+          // Track info
+          const int ix = ax + art + 22;
+          it.printf(ix, npy + 22, id(pf_label), cyan, TextAlign::TOP_LEFT, "PLAYING · HOME GROUP");
+          std::string title = id(p_np_title).has_state() ? id(p_np_title).state : "Nothing playing";
+          if ((int)title.length() > 22) title = title.substr(0, 22) + "...";
+          it.printf(ix, npy + 48, id(pf_name), bright, TextAlign::TOP_LEFT, "%s", title.c_str());
+          std::string artist = id(p_np_artist).has_state() ? id(p_np_artist).state : "";
+          if ((int)artist.length() > 30) artist = artist.substr(0, 30) + "...";
+          it.printf(ix, npy + 86, id(pf_small), base0, TextAlign::TOP_LEFT, "%s", artist.c_str());
+          // Master volume
+          int mv = id(p_home_vol).has_state() ? (int)(id(p_home_vol).state * 100) : 0;
+          it.printf(ix, npy + 130, id(pf_label), dim, TextAlign::TOP_LEFT, "MASTER");
+          it.printf(ix + 90, npy + 124, id(pf_value), bright, TextAlign::TOP_LEFT, "%d%%", mv);
+
+          // Player volumes
+          it.printf(pad, npy + np_h + 16, id(pf_label), dim, TextAlign::TOP_LEFT, "PLAYER VOLUMES");
+          esphome::sensor::Sensor* vols[5] = { id(vol1_level), id(vol2_level), id(vol3_level), id(vol4_level), id(vol5_level) };
+          esphome::binary_sensor::BinarySensor* mutes[5] = { id(vol1_muted), id(vol2_muted), id(vol3_muted), id(vol4_muted), id(vol5_muted) };
+          static const char* const rlabels[5] = { "${vol1_label}", "${vol2_label}", "${vol3_label}", "${vol4_label}", "${vol5_label}" };
+
+          int ry = npy + np_h + 48;
+          const int rh = 52, rgap = 10;
+          for (int i = 0; i < 5; i++, ry += rh + rgap) {
+            bool av = vols[i]->has_state();
+            bool muted = mutes[i]->has_state() && mutes[i]->state;
+            int v = av ? (int)(vols[i]->state * 100) : 0;
+            it.filled_rounded_rectangle(pad, ry, W - 2 * pad, rh, 14, card);
+            // mute glyph box
+            it.filled_rounded_rectangle(pad + 12, ry + 8, 36, 36, 9, muted ? Color(0x3A,0x16,0x14) : track);
+            it.printf(pad + 12 + 18, ry + 8 + 18, id(pf_label), muted ? red : txt, TextAlign::CENTER, "%s", muted ? "x" : "<");
+            // name
+            it.printf(pad + 64, ry + rh / 2, id(pf_value), av ? bright : dim, TextAlign::CENTER_LEFT, "%s", rlabels[i]);
+            // level bar
+            const int lbx = pad + 200, lbw = W - 2 * pad - 200 - 150;
+            it.filled_rounded_rectangle(lbx, ry + rh / 2 - 4, lbw, 8, 4, track);
+            if (av && v > 0) it.filled_rounded_rectangle(lbx, ry + rh / 2 - 4, lbw * v / 100, 8, 4, cyan);
+            // minus / value / plus
+            it.printf(W - pad - 150, ry + rh / 2, id(pf_value), dim, TextAlign::CENTER_LEFT, "-");
+            if (av) it.printf(W - pad - 80, ry + rh / 2, id(pf_value), bright, TextAlign::CENTER, "%d%%", v);
+            else    it.printf(W - pad - 80, ry + rh / 2, id(pf_value), dim, TextAlign::CENTER, "—");
+            it.printf(W - pad - 16, ry + rh / 2, id(pf_value), dim, TextAlign::CENTER_RIGHT, "+");
+          }
+
+          // Page dots (5) — index 1 active
+          const int dy = H - 26;
+          for (int i = 0; i < 5; i++) {
+            int dx = W / 2 + (i - 2) * 22;
+            if (i == 1) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            else        it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
+          }
+
+      # ============================ DETAIL ============================
+      - id: printers_detail
+        lambda: |-
+          const int W = it.get_width();
+          const int H = it.get_height();
+          const Color bg(0x00,0x2B,0x36), card(0x07,0x36,0x42);
+          const Color bright(0xFD,0xF6,0xE3), txt(0x93,0xA1,0xA1), base0(0x83,0x94,0x96);
+          const Color dim(0x58,0x6E,0x75), cyan(0x2A,0xA1,0x98), green(0x85,0x99,0x00);
+          const Color yellow(0xB5,0x89,0x00), orange(0xCB,0x4B,0x16), track(0x03,0x1F,0x26);
+          const int pad = 28;
+
+          int s = id(printer_idx) - 2;          // 0 = HD2, 1 = H2D, 2 = X1
+          if (s < 0) s = 0; if (s > 2) s = 2;
+
+          esphome::sensor::Sensor* prog[3]   = { id(p_hd2_progress), id(p_hd1_progress), id(p_x1_progress) };
+          esphome::sensor::Sensor* layer[3]  = { id(p_hd2_layer),    id(p_hd1_layer),    id(p_x1_layer) };
+          esphome::sensor::Sensor* layers[3] = { id(p_hd2_layers),   id(p_hd1_layers),   id(p_x1_layers) };
+          esphome::sensor::Sensor* bed[3]    = { id(p_hd2_bed),      id(p_hd1_bed),      id(p_x1_bed) };
+          esphome::sensor::Sensor* bedt[3]   = { id(p_hd2_bedt),     id(p_hd1_bedt),     id(p_x1_bedt) };
+          esphome::sensor::Sensor* noz[3]    = { id(p_hd2_noz),      id(p_hd1_noz),      id(p_x1_noz) };
+          esphome::sensor::Sensor* nozt[3]   = { id(p_hd2_nozt),     id(p_hd1_nozt),     id(p_x1_nozt) };
+          esphome::sensor::Sensor* cham[3]   = { id(p_hd2_cham),     id(p_hd1_cham),     id(p_x1_cham) };
+          esphome::sensor::Sensor* ams[3]    = { id(p_hd2_ams),      id(p_hd1_ams),      id(p_x1_ams) };
+          esphome::text_sensor::TextSensor* tray[3] = { id(p_hd2_tray), id(p_hd1_tray), id(p_x1_tray) };
+          esphome::text_sensor::TextSensor* rem[3]  = { id(p_hd2_rem),  id(p_hd1_rem),  id(p_x1_rem) };
+          esphome::text_sensor::TextSensor* eta[3]  = { id(p_hd2_eta),  id(p_hd1_eta),  id(p_x1_eta) };
+          esphome::binary_sensor::BinarySensor* online[3]   = { id(p_hd2_online),   id(p_hd1_online),   id(p_x1_online) };
+          esphome::binary_sensor::BinarySensor* printing[3] = { id(p_hd2_printing), id(p_hd1_printing), id(p_x1_printing) };
+          esphome::binary_sensor::BinarySensor* power[3]    = { id(p_hd2_power),    id(p_hd1_power),    id(p_x1_power) };
+          esphome::binary_sensor::BinarySensor* clight[3]   = { id(p_hd2_light),    id(p_hd1_light),    id(p_x1_light) };
+          static const char* const names[3] = { "HD2", "H2D", "X1 Carbon" };
+
+          it.fill(bg);
+
+          bool on  = online[s]->has_state() && online[s]->state;
+          bool prn = printing[s]->has_state() && printing[s]->state;
+          Color status = on ? (prn ? green : yellow) : dim;
+          const char* status_txt = on ? (prn ? "PRINTING" : "IDLE") : "OFFLINE";
+
+          // Header: name + status
+          it.printf(pad, 26, id(pf_title), bright, TextAlign::TOP_LEFT, "%s", names[s]);
+          int nx, ny, nw, nh;
+          it.get_text_bounds(pad, 26, names[s], id(pf_title), TextAlign::TOP_LEFT, &nx, &ny, &nw, &nh);
+          it.printf(pad + nw + 18, 36, id(pf_label), status, TextAlign::TOP_LEFT, "%s", status_txt);
+          // Task line
+          std::string task = tray[s]->has_state() ? tray[s]->state : "";
+          it.printf(pad, 78, id(pf_small), base0, TextAlign::TOP_LEFT, "%s", task.c_str());
+
+          // Big progress + key facts
+          int p = prog[s]->has_state() ? (int)prog[s]->state : 0;
+          if (p < 0) p = 0; if (p > 100) p = 100;
+          const int rcx = pad + 95, rcy = 230, rr = 86;
+          // ring (track + progress arc approximated by thick circles + sweep ticks)
+          it.filled_circle(rcx, rcy, rr, track);
+          it.filled_circle(rcx, rcy, rr - 16, bg);
+          // sweep: draw radial lines for filled portion
+          for (int a = 0; a < (p * 360 / 100); a += 2) {
+            float rad = (a - 90) * 3.14159265f / 180.0f;
+            int x0 = rcx + (int)((rr - 16) * cosf(rad));
+            int y0 = rcy + (int)((rr - 16) * sinf(rad));
+            int x1 = rcx + (int)(rr * cosf(rad));
+            int y1 = rcy + (int)(rr * sinf(rad));
+            it.line(x0, y0, x1, y1, prn ? cyan : (on ? yellow : dim));
+          }
+          it.printf(rcx, rcy - 8, id(pf_big), bright, TextAlign::CENTER, "%d%%", p);
+          int cl = layer[s]->has_state() ? (int)layer[s]->state : 0;
+          int tl = layers[s]->has_state() ? (int)layers[s]->state : 0;
+          if (prn && tl > 0) it.printf(rcx, rcy + 34, id(pf_small), base0, TextAlign::CENTER, "layer %d/%d", cl, tl);
+          else               it.printf(rcx, rcy + 34, id(pf_small), base0, TextAlign::CENTER, "%s", on ? "ready" : "offline");
+
+          // Facts column (right of ring)
+          const int fx = pad + 210;
+          it.printf(fx, 150, id(pf_label), dim, TextAlign::TOP_LEFT, "TIME REMAINING");
+          it.printf(fx, 172, id(pf_value), bright, TextAlign::TOP_LEFT, "%s", (prn && rem[s]->has_state()) ? rem[s]->state.c_str() : "—");
+          it.printf(fx, 218, id(pf_label), dim, TextAlign::TOP_LEFT, "FINISHES");
+          it.printf(fx, 240, id(pf_value), bright, TextAlign::TOP_LEFT, "%s", (prn && eta[s]->has_state()) ? eta[s]->state.c_str() : "—");
+          it.printf(fx, 286, id(pf_label), dim, TextAlign::TOP_LEFT, "FILAMENT");
+          it.printf(fx, 308, id(pf_value), bright, TextAlign::TOP_LEFT, "%s", task.c_str());
+
+          // Gauges row (nozzle / bed / chamber)
+          const int gy = 380, gh = 110, gw = (W - 2 * pad - 2 * 14) / 3;
+          static const char* const glabel[3] = { "Nozzle", "Bed", "Chamber" };
+          int gval[3] = {
+            noz[s]->has_state() ? (int)noz[s]->state : 0,
+            bed[s]->has_state() ? (int)bed[s]->state : 0,
+            cham[s]->has_state() ? (int)cham[s]->state : 0 };
+          int gtgt[3] = {
+            nozt[s]->has_state() ? (int)nozt[s]->state : 0,
+            bedt[s]->has_state() ? (int)bedt[s]->state : 0, -1 };
+          for (int g = 0; g < 3; g++) {
+            int gx = pad + g * (gw + 14);
+            it.filled_rounded_rectangle(gx, gy, gw, gh, 16, card);
+            it.printf(gx + gw / 2, gy + 18, id(pf_label), base0, TextAlign::TOP_CENTER, "%s", glabel[g]);
+            if (gtgt[g] > 0) it.printf(gx + gw / 2, gy + 44, id(pf_value), bright, TextAlign::TOP_CENTER, "%d/%d°", gval[g], gtgt[g]);
+            else             it.printf(gx + gw / 2, gy + 44, id(pf_value), bright, TextAlign::TOP_CENTER, "%d°", gval[g]);
+          }
+          int amsv = ams[s]->has_state() ? (int)ams[s]->state : -1;
+          if (amsv >= 0) it.printf(W - pad, gy + gh + 14, id(pf_small), dim, TextAlign::TOP_RIGHT, "AMS %d%% RH", amsv);
+
+          // Controls row (power / chamber light) — display reflects state
+          const int cty = 540, cth = 64, ctw = (W - 2 * pad - 14) / 2;
+          bool pw = power[s]->has_state() && power[s]->state;
+          bool li = clight[s]->has_state() && clight[s]->state;
+          static const char* const clab[2] = { "Power", "Chamber light" };
+          bool cstate[2] = { pw, li };
+          for (int c = 0; c < 2; c++) {
+            int ctx = pad + c * (ctw + 14);
+            it.filled_rounded_rectangle(ctx, cty, ctw, cth, 16, card);
+            it.printf(ctx + 16, cty + cth / 2, id(pf_value), txt, TextAlign::CENTER_LEFT, "%s", clab[c]);
+            const int tw2 = 58, th2 = 32;
+            int tgx = ctx + ctw - 16 - tw2, tgy = cty + (cth - th2) / 2;
+            it.filled_rounded_rectangle(tgx, tgy, tw2, th2, th2 / 2, cstate[c] ? green : track);
+            int knob = cstate[c] ? (tgx + tw2 - th2 / 2) : (tgx + th2 / 2);
+            it.filled_circle(knob, tgy + th2 / 2, th2 / 2 - 4, cstate[c] ? bright : txt);
+          }
+
+          // Page dots (5) — index (s+2) active
+          const int dy = H - 26;
+          for (int i = 0; i < 5; i++) {
+            int dx = W / 2 + (i - 2) * 22;
+            if (i == s + 2) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            else            it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
+          }
