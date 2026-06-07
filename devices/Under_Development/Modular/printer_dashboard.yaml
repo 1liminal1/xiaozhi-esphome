@@ -255,6 +255,15 @@ display:
           const Color yellow(0xB5,0x89,0x00), orange(0xCB,0x4B,0x16), track(0x03,0x1F,0x26);
 
           it.fill(bg);
+          auto rrect = [&](int rx, int ry, int rw, int rh, int rd, Color rc) {
+            if (rd * 2 > rh) rd = rh / 2; if (rd * 2 > rw) rd = rw / 2; if (rd < 0) rd = 0;
+            it.filled_rectangle(rx + rd, ry, rw - 2 * rd, rh, rc);
+            it.filled_rectangle(rx, ry + rd, rw, rh - 2 * rd, rc);
+            it.filled_circle(rx + rd, ry + rd, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rd, rd, rc);
+            it.filled_circle(rx + rd, ry + rh - rd - 1, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rh - rd - 1, rd, rc);
+          };
 
           // ── Header: "Study Printers" (Printers in orange) ──
           const int pad = 28;
@@ -289,8 +298,8 @@ display:
             const char* status_txt = on ? (prn ? "PRINTING" : "IDLE") : "OFFLINE";
 
             // Card + left accent
-            it.filled_rounded_rectangle(cx, cy, cw, card_h, 18, card);
-            it.filled_rounded_rectangle(cx, cy, 7, card_h, 3, status);
+            rrect(cx, cy, cw, card_h, 18, card);
+            rrect(cx, cy, 7, card_h, 3, status);
 
             // Name + status badge
             it.printf(cx + 24, cy + 14, id(pf_name), bright, TextAlign::TOP_LEFT, "%s", names[i]);
@@ -313,9 +322,9 @@ display:
             const int bar_x = cx + 24;
             const int bar_y = cy + 84;
             const int bar_w = cw - 24 - 250;
-            it.filled_rounded_rectangle(bar_x, bar_y, bar_w, 12, 6, track);
+            rrect(bar_x, bar_y, bar_w, 12, 6, track);
             int fill = bar_w * p / 100;
-            if (fill > 4) it.filled_rounded_rectangle(bar_x, bar_y, fill, 12, 6, prn ? cyan : dim);
+            if (fill > 4) rrect(bar_x, bar_y, fill, 12, 6, prn ? cyan : dim);
             char pct[8]; snprintf(pct, sizeof(pct), "%d%%", p);
             it.printf(bar_x + bar_w + 18, cy + 78, id(pf_value), bright, TextAlign::TOP_LEFT, "%s", pct);
 
@@ -324,7 +333,7 @@ display:
             const int tgl_w = 74, tgl_h = 40;
             const int tgl_x = cx + cw - 24 - tgl_w;
             const int tgl_y = cy + 70;
-            it.filled_rounded_rectangle(tgl_x, tgl_y, tgl_w, tgl_h, tgl_h / 2, pw ? green : track);
+            rrect(tgl_x, tgl_y, tgl_w, tgl_h, tgl_h / 2, pw ? green : track);
             int knob = pw ? (tgl_x + tgl_w - tgl_h / 2) : (tgl_x + tgl_h / 2);
             it.filled_circle(knob, tgl_y + tgl_h / 2, tgl_h / 2 - 4, pw ? bright : txt);
             it.printf(tgl_x + tgl_w / 2, tgl_y + tgl_h + 4, id(pf_small), dim, TextAlign::TOP_CENTER, "Power");
@@ -339,21 +348,21 @@ display:
             } else { snprintf(buf, sizeof(buf), "—"); }
             int tw, th, tx2, ty2;
             it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
-            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            rrect(chx, chy - 4, tw + 22, 32, 11, track);
             it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
             chx += tw + 22 + 10;
             // bed
             int bv = bed[i]->has_state() ? (int)bed[i]->state : 0;
             snprintf(buf, sizeof(buf), "Bed %d°", bv);
             it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
-            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            rrect(chx, chy - 4, tw + 22, 32, 11, track);
             it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
             chx += tw + 22 + 10;
             // nozzle
             int nv = noz[i]->has_state() ? (int)noz[i]->state : 0;
             snprintf(buf, sizeof(buf), "Noz %d°", nv);
             it.get_text_bounds(chx, chy, buf, id(pf_label), TextAlign::TOP_LEFT, &tx2, &ty2, &tw, &th);
-            it.filled_rounded_rectangle(chx, chy - 4, tw + 22, 32, 11, track);
+            rrect(chx, chy - 4, tw + 22, 32, 11, track);
             it.printf(chx + 11, chy, id(pf_label), txt, TextAlign::TOP_LEFT, "%s", buf);
           }
 
@@ -361,7 +370,7 @@ display:
           const int dy = H - 26;
           for (int i = 0; i < 5; i++) {
             int dx = W / 2 + (i - 2) * 22;
-            if (i == 0) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            if (i == 0) rrect(dx - 13, dy - 4, 26, 9, 4, cyan);
             else        it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
           }
 
@@ -377,6 +386,15 @@ display:
           const int pad = 28;
 
           it.fill(bg);
+          auto rrect = [&](int rx, int ry, int rw, int rh, int rd, Color rc) {
+            if (rd * 2 > rh) rd = rh / 2; if (rd * 2 > rw) rd = rw / 2; if (rd < 0) rd = 0;
+            it.filled_rectangle(rx + rd, ry, rw - 2 * rd, rh, rc);
+            it.filled_rectangle(rx, ry + rd, rw, rh - 2 * rd, rc);
+            it.filled_circle(rx + rd, ry + rd, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rd, rd, rc);
+            it.filled_circle(rx + rd, ry + rh - rd - 1, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rh - rd - 1, rd, rc);
+          };
 
           // Header
           it.printf(pad, 30, id(pf_title), bright, TextAlign::TOP_LEFT, "Study ");
@@ -386,14 +404,14 @@ display:
 
           // Now-playing card
           const int npy = 92, np_h = 186;
-          it.filled_rounded_rectangle(pad, npy, W - 2 * pad, np_h, 18, card);
+          rrect(pad, npy, W - 2 * pad, np_h, 18, card);
           // Album art
           const int art = 150, ax = pad + 18, ay = npy + 18;
           bool has_art = id(p_np_art).has_state() && id(p_np_art).state.length() > 10;
           if (has_art) {
             it.image(ax, ay, id(np_album_art), ImageAlign::TOP_LEFT);
           } else {
-            it.filled_rounded_rectangle(ax, ay, art, art, 14, Color(0x26,0x8B,0xD2));
+            rrect(ax, ay, art, art, 14, Color(0x26,0x8B,0xD2));
             it.printf(ax + art / 2, ay + art / 2, id(pf_big), bright, TextAlign::CENTER, "%s", "♪");
           }
           // Track info
@@ -422,16 +440,16 @@ display:
             bool av = vols[i]->has_state();
             bool muted = mutes[i]->has_state() && mutes[i]->state;
             int v = av ? (int)(vols[i]->state * 100) : 0;
-            it.filled_rounded_rectangle(pad, ry, W - 2 * pad, rh, 14, card);
+            rrect(pad, ry, W - 2 * pad, rh, 14, card);
             // mute glyph box
-            it.filled_rounded_rectangle(pad + 12, ry + 8, 36, 36, 9, muted ? Color(0x3A,0x16,0x14) : track);
+            rrect(pad + 12, ry + 8, 36, 36, 9, muted ? Color(0x3A,0x16,0x14) : track);
             it.printf(pad + 12 + 18, ry + 8 + 18, id(pf_label), muted ? red : txt, TextAlign::CENTER, "%s", muted ? "x" : "<");
             // name
             it.printf(pad + 64, ry + rh / 2, id(pf_value), av ? bright : dim, TextAlign::CENTER_LEFT, "%s", rlabels[i]);
             // level bar
             const int lbx = pad + 200, lbw = W - 2 * pad - 200 - 150;
-            it.filled_rounded_rectangle(lbx, ry + rh / 2 - 4, lbw, 8, 4, track);
-            if (av && v > 0) it.filled_rounded_rectangle(lbx, ry + rh / 2 - 4, lbw * v / 100, 8, 4, cyan);
+            rrect(lbx, ry + rh / 2 - 4, lbw, 8, 4, track);
+            if (av && v > 0) rrect(lbx, ry + rh / 2 - 4, lbw * v / 100, 8, 4, cyan);
             // minus / value / plus
             it.printf(W - pad - 150, ry + rh / 2, id(pf_value), dim, TextAlign::CENTER_LEFT, "-");
             if (av) it.printf(W - pad - 80, ry + rh / 2, id(pf_value), bright, TextAlign::CENTER, "%d%%", v);
@@ -443,7 +461,7 @@ display:
           const int dy = H - 26;
           for (int i = 0; i < 5; i++) {
             int dx = W / 2 + (i - 2) * 22;
-            if (i == 1) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            if (i == 1) rrect(dx - 13, dy - 4, 26, 9, 4, cyan);
             else        it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
           }
 
@@ -480,6 +498,15 @@ display:
           static const char* const names[3] = { "HD2", "H2D", "X1 Carbon" };
 
           it.fill(bg);
+          auto rrect = [&](int rx, int ry, int rw, int rh, int rd, Color rc) {
+            if (rd * 2 > rh) rd = rh / 2; if (rd * 2 > rw) rd = rw / 2; if (rd < 0) rd = 0;
+            it.filled_rectangle(rx + rd, ry, rw - 2 * rd, rh, rc);
+            it.filled_rectangle(rx, ry + rd, rw, rh - 2 * rd, rc);
+            it.filled_circle(rx + rd, ry + rd, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rd, rd, rc);
+            it.filled_circle(rx + rd, ry + rh - rd - 1, rd, rc);
+            it.filled_circle(rx + rw - rd - 1, ry + rh - rd - 1, rd, rc);
+          };
 
           bool on  = online[s]->has_state() && online[s]->state;
           bool prn = printing[s]->has_state() && printing[s]->state;
@@ -538,7 +565,7 @@ display:
             bedt[s]->has_state() ? (int)bedt[s]->state : 0, -1 };
           for (int g = 0; g < 3; g++) {
             int gx = pad + g * (gw + 14);
-            it.filled_rounded_rectangle(gx, gy, gw, gh, 16, card);
+            rrect(gx, gy, gw, gh, 16, card);
             it.printf(gx + gw / 2, gy + 18, id(pf_label), base0, TextAlign::TOP_CENTER, "%s", glabel[g]);
             if (gtgt[g] > 0) it.printf(gx + gw / 2, gy + 44, id(pf_value), bright, TextAlign::TOP_CENTER, "%d/%d°", gval[g], gtgt[g]);
             else             it.printf(gx + gw / 2, gy + 44, id(pf_value), bright, TextAlign::TOP_CENTER, "%d°", gval[g]);
@@ -554,11 +581,11 @@ display:
           bool cstate[2] = { pw, li };
           for (int c = 0; c < 2; c++) {
             int ctx = pad + c * (ctw + 14);
-            it.filled_rounded_rectangle(ctx, cty, ctw, cth, 16, card);
+            rrect(ctx, cty, ctw, cth, 16, card);
             it.printf(ctx + 16, cty + cth / 2, id(pf_value), txt, TextAlign::CENTER_LEFT, "%s", clab[c]);
             const int tw2 = 58, th2 = 32;
             int tgx = ctx + ctw - 16 - tw2, tgy = cty + (cth - th2) / 2;
-            it.filled_rounded_rectangle(tgx, tgy, tw2, th2, th2 / 2, cstate[c] ? green : track);
+            rrect(tgx, tgy, tw2, th2, th2 / 2, cstate[c] ? green : track);
             int knob = cstate[c] ? (tgx + tw2 - th2 / 2) : (tgx + th2 / 2);
             it.filled_circle(knob, tgy + th2 / 2, th2 / 2 - 4, cstate[c] ? bright : txt);
           }
@@ -567,6 +594,6 @@ display:
           const int dy = H - 26;
           for (int i = 0; i < 5; i++) {
             int dx = W / 2 + (i - 2) * 22;
-            if (i == s + 2) it.filled_rounded_rectangle(dx - 13, dy - 4, 26, 9, 4, cyan);
+            if (i == s + 2) rrect(dx - 13, dy - 4, 26, 9, 4, cyan);
             else            it.filled_circle(dx, dy, 4, Color(0x2C,0x40,0x47));
           }
