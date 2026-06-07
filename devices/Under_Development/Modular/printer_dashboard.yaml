@@ -102,7 +102,6 @@ binary_sensor:
   # ── Swipe navigation (extend the core swipe sensors, additive) ──
   - id: !extend swipe_left
     on_press:
-      - lambda: 'ESP_LOGI("pdash", "swipe_left fired ui=%d ov=%d sp=%d", id(printer_ui), id(overlay_lock), id(show_spotify_page));'
       - if:
           condition:
             lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
@@ -110,7 +109,6 @@ binary_sensor:
             - script.execute: printer_next
   - id: !extend swipe_right
     on_press:
-      - lambda: 'ESP_LOGI("pdash", "swipe_right fired ui=%d ov=%d sp=%d", id(printer_ui), id(overlay_lock), id(show_spotify_page));'
       - if:
           condition:
             lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
@@ -121,7 +119,7 @@ binary_sensor:
 online_image:
   - id: np_album_art
     url: https://i.scdn.co/image/ab67616d0000b273e319baafd16e84f0408af2a0
-    resize: 300x300
+    resize: 150x150
     format: JPEG
     type: RGB565
     update_interval: never
@@ -194,6 +192,8 @@ script:
     then:
       - lambda: |-
           id(printer_lock) = true;
+          static bool s_batt_off = false;
+          if (!s_batt_off) { id(show_battery_status).turn_off(); s_batt_off = true; }
           switch (id(printer_idx)) {
             case 0:  id(main_display).show_page(printers_overview); break;
             case 1:  id(main_display).show_page(printers_sound);    break;
@@ -203,13 +203,13 @@ script:
 
   - id: printer_next
     then:
-      - lambda: 'int n = id(printer_idx) + 1; if (n > 4) n = 0; id(printer_idx) = n; ESP_LOGI("pdash", "next -> idx=%d", n);'
+      - lambda: 'int n = id(printer_idx) + 1; if (n > 4) n = 0; id(printer_idx) = n;'
       - script.execute: reset_screensaver
       - script.execute: printer_show
 
   - id: printer_prev
     then:
-      - lambda: 'int n = id(printer_idx) - 1; if (n < 0) n = 4; id(printer_idx) = n; ESP_LOGI("pdash", "prev -> idx=%d", n);'
+      - lambda: 'int n = id(printer_idx) - 1; if (n < 0) n = 4; id(printer_idx) = n;'
       - script.execute: reset_screensaver
       - script.execute: printer_show
 
@@ -591,7 +591,7 @@ display:
             else             it.printf(gx + gw / 2, gy + 44, id(pf_value), bright, TextAlign::TOP_CENTER, "%d°", gval[g]);
           }
           int amsv = ams[s]->has_state() ? (int)ams[s]->state : -1;
-          if (amsv >= 0) it.printf(W - pad, gy + gh + 14, id(pf_small), dim, TextAlign::TOP_RIGHT, "AMS %d%% RH", amsv);
+          if (amsv >= 0 && amsv <= 100) it.printf(W - pad, gy + gh + 14, id(pf_small), dim, TextAlign::TOP_RIGHT, "AMS %d%% RH", amsv);
 
           // Controls row (power / chamber light) — display reflects state
           const int cty = 540, cth = 64, ctw = (W - 2 * pad - 14) / 2;
