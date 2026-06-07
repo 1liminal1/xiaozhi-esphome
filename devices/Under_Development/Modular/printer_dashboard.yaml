@@ -79,6 +79,14 @@ text_sensor:
       then:
         - script.execute: update_np_image
 
+  # Neutralise the spotify package on THIS device: point its album-art + title
+  # sensors at non-existent entities so it never downloads/decodes the 720x720
+  # full-screen art (redundant with the Sound page; heavy + a crash suspect).
+  - id: !extend spotify_album_art_url
+    entity_id: sensor.spd_unused_spotify_art
+  - id: !extend spotify_title
+    entity_id: sensor.spd_unused_spotify_title
+
 # ── Printer binary sensors (online / printing / power toggle / chamber light) ─
 binary_sensor:
   - { platform: homeassistant, id: p_hd2_online,   entity_id: binary_sensor.hd2_online, internal: true }
@@ -239,6 +247,7 @@ script:
 interval:
   - interval: 1s
     then:
+      - lambda: 'id(printer_lock) = true;'
       - if:
           condition:
             lambda: |-
