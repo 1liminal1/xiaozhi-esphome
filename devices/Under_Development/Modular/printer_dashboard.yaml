@@ -192,8 +192,13 @@ script:
     then:
       - lambda: |-
           id(printer_lock) = true;
-          static bool s_batt_off = false;
-          if (!s_batt_off) { id(show_battery_status).turn_off(); s_batt_off = true; }
+          static bool s_init = false;
+          if (!s_init) {
+            s_init = true;
+            id(show_battery_status).turn_off();   // mains-powered, no battery
+            id(clock_enabled).turn_off();         // no clock screensaver on the printer dashboard
+            id(show_clock) = false;               // clear any latched clock state
+          }
           switch (id(printer_idx)) {
             case 0:  id(main_display).show_page(printers_overview); break;
             case 1:  id(main_display).show_page(printers_sound);    break;
