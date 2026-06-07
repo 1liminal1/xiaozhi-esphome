@@ -666,7 +666,7 @@ interval:
             id(idle_seconds)++;
             int delay_s = (int) id(clock_delay_seconds).state;
             if (delay_s <= 0) delay_s = 30;
-            if (id(idle_seconds) >= delay_s && !id(show_clock) && !id(show_spotify_page) && !id(overlay_lock)) {
+            if (id(idle_seconds) >= delay_s && !id(show_clock) && !id(show_spotify_page) && !id(overlay_lock) && !id(printer_lock)) {
               id(show_clock) = true;
               id(show_clock_page).execute();
             }
@@ -708,6 +708,12 @@ script:
                                 && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
                               id(main_display).show_page(empty_clock);
                               id(main_display).update();
+                              return;
+                            }
+                            // Printer dashboard owns the screen while idle —
+                            // leave its page up instead of drawing idle_page/clock.
+                            if (id(printer_lock)
+                                && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
                               return;
                             }
                             if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}
@@ -1673,6 +1679,13 @@ globals:
     type: int
     restore_value: no
     initial_value: "0"
+
+  # Printer dashboard: suppress idle_page/clock while the printer UI owns the screen.
+  # Default false -> no effect on any device that doesn't set it (e.g. bedroom).
+  - id: printer_lock
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 image:
   - file: ${error_illustration_file}

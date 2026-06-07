@@ -193,6 +193,7 @@ script:
   - id: printer_show
     then:
       - lambda: |-
+          id(printer_lock) = true;
           switch (id(printer_idx)) {
             case 0:  id(main_display).show_page(printers_overview); break;
             case 1:  id(main_display).show_page(printers_sound);    break;
