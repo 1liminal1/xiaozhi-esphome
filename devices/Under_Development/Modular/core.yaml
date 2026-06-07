@@ -704,16 +704,16 @@ script:
                         api.connected:
                       then:
                         - lambda: |-
+                            // Printer dashboard owns the screen entirely. The voice
+                            // assistant is mic + audio only and never draws — no clock,
+                            // idle, or listening/thinking/replying pages.
+                            if (id(printer_lock)) {
+                              return;
+                            }
                             if (id(showing_fullscreen_image)
                                 && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
                               id(main_display).show_page(empty_clock);
                               id(main_display).update();
-                              return;
-                            }
-                            // Printer dashboard owns the screen while idle —
-                            // leave its page up instead of drawing idle_page/clock.
-                            if (id(printer_lock)
-                                && id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
                               return;
                             }
                             if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}
