@@ -102,6 +102,7 @@ binary_sensor:
   # ── Swipe navigation (extend the core swipe sensors, additive) ──
   - id: !extend swipe_left
     on_press:
+      - lambda: 'ESP_LOGI("pdash", "swipe_left fired ui=%d ov=%d sp=%d", id(printer_ui), id(overlay_lock), id(show_spotify_page));'
       - if:
           condition:
             lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
@@ -109,6 +110,7 @@ binary_sensor:
             - script.execute: printer_next
   - id: !extend swipe_right
     on_press:
+      - lambda: 'ESP_LOGI("pdash", "swipe_right fired ui=%d ov=%d sp=%d", id(printer_ui), id(overlay_lock), id(show_spotify_page));'
       - if:
           condition:
             lambda: 'return id(printer_ui) && !id(overlay_lock) && !id(show_spotify_page);'
@@ -200,13 +202,13 @@ script:
 
   - id: printer_next
     then:
-      - lambda: 'int n = id(printer_idx) + 1; if (n > 4) n = 0; id(printer_idx) = n;'
+      - lambda: 'int n = id(printer_idx) + 1; if (n > 4) n = 0; id(printer_idx) = n; ESP_LOGI("pdash", "next -> idx=%d", n);'
       - script.execute: reset_screensaver
       - script.execute: printer_show
 
   - id: printer_prev
     then:
-      - lambda: 'int n = id(printer_idx) - 1; if (n < 0) n = 4; id(printer_idx) = n;'
+      - lambda: 'int n = id(printer_idx) - 1; if (n < 0) n = 4; id(printer_idx) = n; ESP_LOGI("pdash", "prev -> idx=%d", n);'
       - script.execute: reset_screensaver
       - script.execute: printer_show
 
