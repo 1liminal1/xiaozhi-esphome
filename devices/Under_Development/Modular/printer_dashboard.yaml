@@ -126,32 +126,50 @@ online_image:
 
 # ── Fonts ───────────────────────────────────────────────────────────────
 font:
-  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 700
     id: pf_title
     size: 34
     glyphsets: [ "${font_glyphsets}" ]
     ignore_missing_glyphs: true
-  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 700
     id: pf_name
     size: 30
     glyphsets: [ "${font_glyphsets}" ]
     ignore_missing_glyphs: true
-  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 700
     id: pf_big
     size: 54
     glyphsets: [ "${font_glyphsets}" ]
     ignore_missing_glyphs: true
-  - file: { type: gfonts, family: ${font_family}, weight: 700 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 700
     id: pf_value
     size: 30
     glyphsets: [ "${font_glyphsets}" ]
     ignore_missing_glyphs: true
-  - file: { type: gfonts, family: ${font_family}, weight: 600 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 600
     id: pf_label
     size: 19
     glyphsets: [ "${font_glyphsets}" ]
     ignore_missing_glyphs: true
-  - file: { type: gfonts, family: ${font_family}, weight: 400 }
+  - file:
+      type: gfonts
+      family: "${font_family}"
+      weight: 400
     id: pf_small
     size: 17
     glyphsets: [ "${font_glyphsets}" ]
