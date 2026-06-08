@@ -35,7 +35,7 @@ def card(idk, label, ent):
     return f"""              - obj:
                   scrollable: false
                   width: 684
-                  height: 150
+                  height: 168
                   bg_color: 0x073642
                   bg_opa: COVER
                   radius: 18
@@ -48,7 +48,7 @@ def card(idk, label, ent):
                         align: LEFT_MID
                         x: 0
                         width: 7
-                        height: 150
+                        height: 168
                         radius: 0
                         bg_color: 0x586e75
                         border_width: 0
@@ -88,8 +88,8 @@ def card(idk, label, ent):
                         id: p_{idk}_bar
                         align: TOP_LEFT
                         x: 22
-                        y: 82
-                        width: 270
+                        y: 90
+                        width: 240
                         height: 12
                         min_value: 0
                         max_value: 100
@@ -102,8 +102,8 @@ def card(idk, label, ent):
                     - label:
                         id: p_{idk}_pct
                         align: TOP_LEFT
-                        x: 308
-                        y: 75
+                        x: 280
+                        y: 84
                         text: "--"
                         text_color: 0xfdf6e3
                         text_font: figtree_28
@@ -306,20 +306,27 @@ def room_row(r, name, ent):
                         text: "{name}"
                         text_color: 0xeee8d5
                         text_font: figtree_24
-                    - bar:
+                    - slider:
                         id: snd_{r}_bar
                         align: LEFT_MID
                         x: 190
                         width: 250
-                        height: 8
                         min_value: 0
                         max_value: 100
                         value: 0
-                        bg_color: 0x002b36
-                        bg_opa: COVER
-                        indicator:
-                          bg_color: 0x2aa198
-                          bg_opa: COVER
+                        on_value:
+                          - if:
+                              condition:
+                                lambda: 'return id(snd_{r}_vol).has_state() && abs((int)x - (int)(id(snd_{r}_vol).state*100.0f)) > 3;'
+                              then:
+                                - homeassistant.service:
+                                    service: media_player.volume_set
+                                    data:
+                                      entity_id: {ent}
+                                    data_template:
+                                      volume_level: "{{{{ vol }}}}"
+                                    variables:
+                                      vol: !lambda 'return x / 100.0;'
 {vbtn("-", "volume_down", ent, -150)}                    - label:
                         id: snd_{r}_pct
                         align: RIGHT_MID
@@ -536,7 +543,7 @@ for (r, name, ent) in rooms:
     attribute: volume_level
     on_value:
       then:
-        - lvgl.bar.update:
+        - lvgl.slider.update:
             id: snd_{r}_bar
             value: !lambda 'return isnan(x) ? 0 : (int)(x*100);'
         - lvgl.label.update:
@@ -663,7 +670,15 @@ for (idk, label, pf, pwr) in printers:
       then:
         - lvgl.label.update:
             id: p_{idk}_chip_rem
-            text: !lambda 'return x.empty() ? std::string("--") : (x + std::string(" left"));'
+            text: !lambda 'return (x.empty() || x == std::string("Not Available")) ? std::string("--") : (x + std::string(" left"));'
+  - platform: homeassistant
+    id: pt_{idk}_task
+    entity_id: sensor.{pf}_task_name
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: p_{idk}_sub
+            text: !lambda 'return (x.empty() || x == std::string("unknown")) ? std::string("") : x;'
 """
 
 # ---------- power binary sensors (input_boolean state -> switch) ----------
