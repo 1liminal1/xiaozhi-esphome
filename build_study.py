@@ -89,8 +89,8 @@ def card(idk, label, ent):
                         align: TOP_LEFT
                         x: 22
                         y: 82
-                        width: 360
-                        height: 14
+                        width: 270
+                        height: 12
                         min_value: 0
                         max_value: 100
                         value: 0
@@ -102,11 +102,11 @@ def card(idk, label, ent):
                     - label:
                         id: p_{idk}_pct
                         align: TOP_LEFT
-                        x: 398
-                        y: 76
+                        x: 308
+                        y: 75
                         text: "--"
                         text_color: 0xfdf6e3
-                        text_font: figtree_32
+                        text_font: figtree_28
                     - switch:
                         id: p_{idk}_sw
                         align: RIGHT_MID
@@ -255,6 +255,345 @@ printer_page = f"""    - id: printer_page
                               text_font: figtree_32
 {cards}"""
 
+# ---------- sound page ----------
+rooms = [
+    ("bal",  "Balcony",     "media_player.balcony"),
+    ("bed",  "Bedroom",     "media_player.bedroom"),
+    ("kit",  "Kitchen",     "media_player.kitchen"),
+    ("bath", "Bathroom",    "media_player.bathroom"),
+    ("liv",  "Living Room", "media_player.living_room"),
+]
+
+def vbtn(sym, svc, ent, x, font="figtree_24"):
+    return f"""                    - button:
+                        align: RIGHT_MID
+                        x: {x}
+                        width: 46
+                        height: 38
+                        radius: 10
+                        bg_color: 0x002b36
+                        border_width: 1
+                        border_color: 0x586e75
+                        on_press:
+                          then:
+                            - homeassistant.service:
+                                service: media_player.{svc}
+                                data:
+                                  entity_id: {ent}
+                        widgets:
+                          - label:
+                              align: CENTER
+                              clickable: false
+                              text: "{sym}"
+                              text_color: 0x93a1a1
+                              text_font: {font}
+"""
+
+def room_row(r, name, ent):
+    return f"""              - obj:
+                  width: 684
+                  height: 52
+                  bg_color: 0x073642
+                  bg_opa: COVER
+                  radius: 14
+                  border_width: 0
+                  pad_all: 0
+                  scrollable: false
+                  widgets:
+                    - label:
+                        align: LEFT_MID
+                        x: 18
+                        text: "{name}"
+                        text_color: 0xeee8d5
+                        text_font: figtree_24
+                    - bar:
+                        id: snd_{r}_bar
+                        align: LEFT_MID
+                        x: 190
+                        width: 250
+                        height: 8
+                        min_value: 0
+                        max_value: 100
+                        value: 0
+                        bg_color: 0x002b36
+                        bg_opa: COVER
+                        indicator:
+                          bg_color: 0x2aa198
+                          bg_opa: COVER
+{vbtn("-", "volume_down", ent, -150)}                    - label:
+                        id: snd_{r}_pct
+                        align: RIGHT_MID
+                        x: -82
+                        text: "--"
+                        text_color: 0xfdf6e3
+                        text_font: figtree_24
+{vbtn("+", "volume_up", ent, -18)}"""
+
+def tbtn(glyph, svc, x, big=False):
+    sz = 52 if big else 48
+    rad = 26 if big else 24
+    bg = "0x2aa198" if big else "0x002b36"
+    bw = 0 if big else 1
+    tcol = "0x002b36" if big else "0x93a1a1"
+    idline = "                        id: snd_pp\n" if big else ""
+    lblid = "                              id: snd_pp_lbl\n" if big else ""
+    return f"""                    - button:
+{idline}                        align: TOP_LEFT
+                        x: {x}
+                        y: {114 if big else 116}
+                        width: {sz}
+                        height: {sz}
+                        radius: {rad}
+                        bg_color: {bg}
+                        border_width: {bw}
+                        border_color: 0x586e75
+                        on_press:
+                          then:
+                            - homeassistant.service:
+                                service: media_player.{svc}
+                                data:
+                                  entity_id: media_player.home
+                        widgets:
+                          - label:
+{lblid}                              align: CENTER
+                              clickable: false
+                              text: "{glyph}"
+                              text_color: {tcol}
+                              text_font: mdi_40
+"""
+
+room_rows = "".join(room_row(r, name, ent) for (r, name, ent) in rooms)
+tb_prev = tbtn("\\U000F04AE", "media_previous_track", 180)
+tb_pp   = tbtn("\\U000F040A", "media_play_pause", 240, big=True)
+tb_next = tbtn("\\U000F04AD", "media_next_track", 304)
+sound_page = f"""    - id: printers_sound
+      widgets:
+        - obj:
+            scrollable: false
+            width: 720
+            height: 720
+            bg_color: 0x002b36
+            bg_opa: COVER
+            pad_top: 16
+            pad_bottom: 10
+            pad_left: 18
+            pad_right: 18
+            border_width: 0
+            radius: 0
+            layout:
+              type: FLEX
+              flex_flow: COLUMN
+              flex_align_main: START
+              flex_align_cross: CENTER
+              pad_row: 10
+            widgets:
+              - obj:
+                  width: 684
+                  height: 46
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
+                  scrollable: false
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW
+                    flex_align_main: SPACE_BETWEEN
+                    flex_align_cross: CENTER
+                  widgets:
+                    - label:
+                        recolor: true
+                        text: "Study  #2aa198 Sound#"
+                        text_color: 0xfdf6e3
+                        text_font: figtree_32
+                    - label:
+                        id: snd_clock
+                        text: "--:--"
+                        text_color: 0x93a1a1
+                        text_font: figtree_32
+              - obj:
+                  width: 684
+                  height: 176
+                  bg_color: 0x073642
+                  bg_opa: COVER
+                  radius: 18
+                  border_width: 1
+                  border_color: 0x2a4048
+                  pad_all: 0
+                  scrollable: false
+                  widgets:
+                    - obj:
+                        align: LEFT_MID
+                        x: 16
+                        width: 144
+                        height: 144
+                        radius: 14
+                        bg_color: 0x268bd2
+                        bg_opa: COVER
+                        border_width: 0
+                        scrollable: false
+                    - label:
+                        align: TOP_LEFT
+                        x: 180
+                        y: 18
+                        text: "PLAYING - HOME GROUP"
+                        text_color: 0x2aa198
+                        text_font: figtree_20
+                    - label:
+                        id: snd_title
+                        align: TOP_LEFT
+                        x: 180
+                        y: 42
+                        text: "Nothing playing"
+                        text_color: 0xfdf6e3
+                        text_font: figtree_32
+                    - label:
+                        id: snd_artist
+                        align: TOP_LEFT
+                        x: 180
+                        y: 84
+                        text: ""
+                        text_color: 0x839496
+                        text_font: figtree_20
+{tb_prev}{tb_pp}{tb_next}                    - label:
+                        align: TOP_LEFT
+                        x: 404
+                        y: 128
+                        text: "MASTER"
+                        text_color: 0x586e75
+                        text_font: figtree_20
+                    - button:
+                        align: TOP_LEFT
+                        x: 492
+                        y: 120
+                        width: 46
+                        height: 40
+                        radius: 10
+                        bg_color: 0x002b36
+                        border_width: 1
+                        border_color: 0x586e75
+                        on_press:
+                          then:
+                            - homeassistant.service:
+                                service: media_player.volume_down
+                                data:
+                                  entity_id: media_player.home
+                        widgets:
+                          - label:
+                              align: CENTER
+                              clickable: false
+                              text: "-"
+                              text_color: 0x93a1a1
+                              text_font: figtree_24
+                    - label:
+                        id: snd_master
+                        align: TOP_LEFT
+                        x: 550
+                        y: 124
+                        text: "--"
+                        text_color: 0xfdf6e3
+                        text_font: figtree_24
+                    - button:
+                        align: TOP_LEFT
+                        x: 622
+                        y: 120
+                        width: 46
+                        height: 40
+                        radius: 10
+                        bg_color: 0x002b36
+                        border_width: 1
+                        border_color: 0x586e75
+                        on_press:
+                          then:
+                            - homeassistant.service:
+                                service: media_player.volume_up
+                                data:
+                                  entity_id: media_player.home
+                        widgets:
+                          - label:
+                              align: CENTER
+                              clickable: false
+                              text: "+"
+                              text_color: 0x93a1a1
+                              text_font: figtree_24
+              - label:
+                  text: "PLAYER VOLUMES"
+                  text_color: 0x586e75
+                  text_font: figtree_20
+{room_rows}"""
+
+# ---------- sound sensors ----------
+snd_sensors = """  - platform: homeassistant
+    id: snd_home_vol
+    entity_id: media_player.home
+    attribute: volume_level
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: snd_master
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              char b[8]; snprintf(b, sizeof(b), "%d%%", (int)(x*100)); return std::string(b);
+"""
+for (r, name, ent) in rooms:
+    snd_sensors += f"""  - platform: homeassistant
+    id: snd_{r}_vol
+    entity_id: {ent}
+    attribute: volume_level
+    on_value:
+      then:
+        - lvgl.bar.update:
+            id: snd_{r}_bar
+            value: !lambda 'return isnan(x) ? 0 : (int)(x*100);'
+        - lvgl.label.update:
+            id: snd_{r}_pct
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              char b[8]; snprintf(b, sizeof(b), "%d%%", (int)(x*100)); return std::string(b);
+"""
+
+snd_tsensors = """  - platform: homeassistant
+    id: snd_title_s
+    entity_id: media_player.home
+    attribute: media_title
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: snd_title
+            text: !lambda 'return x.empty() ? std::string("Nothing playing") : x;'
+  - platform: homeassistant
+    id: snd_artist_s
+    entity_id: media_player.home
+    attribute: media_artist
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: snd_artist
+            text: !lambda 'return x;'
+  - platform: homeassistant
+    id: snd_state_s
+    entity_id: media_player.home
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: snd_pp_lbl
+            text: !lambda 'return x == std::string("playing") ? std::string("\\U000F03E4") : std::string("\\U000F040A");'
+"""
+
+# ---------- swipe nav between overview <-> sound ----------
+nav_scripts = """  - id: nav_to_sound
+    then:
+      - lvgl.page.show:
+          id: printers_sound
+          animation: MOVE_LEFT
+          time: 250ms
+  - id: nav_to_overview
+    then:
+      - lvgl.page.show:
+          id: printer_page
+          animation: MOVE_RIGHT
+          time: 250ms
+"""
+
 # ---------- numeric sensors ----------
 sensors = ""
 for (idk, label, pf, pwr) in printers:
@@ -361,16 +700,25 @@ clock_iv = """  - interval: 10s
 
 # ---------- apply ----------
 assert "  pages:\n" in txt
-txt = txt.replace("  pages:\n", "  pages:\n" + printer_page, 1)
+txt = txt.replace("  pages:\n", "  pages:\n" + printer_page + sound_page, 1)
 assert "\nsensor:\n" in txt
-txt = txt.replace("\nsensor:\n", "\nsensor:\n" + sensors, 1)
+txt = txt.replace("\nsensor:\n", "\nsensor:\n" + sensors + snd_sensors, 1)
 assert "\ntext_sensor:\n" in txt
-txt = txt.replace("\ntext_sensor:\n", "\ntext_sensor:\n" + tsensors, 1)
+txt = txt.replace("\ntext_sensor:\n", "\ntext_sensor:\n" + tsensors + snd_tsensors, 1)
 assert "\nbinary_sensor:\n" in txt
 txt = txt.replace("\nbinary_sensor:\n", "\nbinary_sensor:\n" + bsensors, 1)
 # add clock updater into the existing interval: section
 assert "\ninterval:\n" in txt
 txt = txt.replace("\ninterval:\n", "\ninterval:\n" + clock_iv, 1)
+# nav scripts + swipe between overview and sound
+assert "\nscript:\n" in txt
+txt = txt.replace("\nscript:\n", "\nscript:\n" + nav_scripts, 1)
+assert "          if (is_right) id(pulse_swipe_right).execute();\n" in txt
+txt = txt.replace(
+    "          if (is_right) id(pulse_swipe_right).execute();\n",
+    "          if (is_right) id(pulse_swipe_right).execute();\n"
+    "          if (is_left)  id(nav_to_sound).execute();\n"
+    "          if (is_right) id(nav_to_overview).execute();\n", 1)
 
 # home nav -> printer_page
 txt = txt.replace("- lvgl.page.show: clock_page", "- lvgl.page.show: printer_page")
