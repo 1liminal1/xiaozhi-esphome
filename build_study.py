@@ -42,6 +42,13 @@ def card(idk, label, ent):
                   border_width: 1
                   border_color: 0x2a4048
                   pad_all: 0
+                  clickable: true
+                  on_press:
+                    then:
+                      - lvgl.page.show:
+                          id: detail_{idk}
+                          animation: MOVE_LEFT
+                          time: 250ms
                   widgets:
                     - obj:
                         id: p_{idk}_accent
@@ -53,6 +60,7 @@ def card(idk, label, ent):
                         bg_color: 0x586e75
                         border_width: 0
                         scrollable: false
+                        clickable: false
                     - label:
                         id: p_{idk}_name
                         align: TOP_LEFT
@@ -138,6 +146,7 @@ def card(idk, label, ent):
                         border_width: 0
                         pad_all: 0
                         scrollable: false
+                        clickable: false
                         layout:
                           type: FLEX
                           flex_flow: ROW
@@ -254,6 +263,166 @@ printer_page = f"""    - id: printer_page
                               text_color: 0x93a1a1
                               text_font: figtree_32
 {cards}"""
+
+# ---------- per-printer detail pages (tap a card -> detail_{idk}) ----------
+def tile(x, y, w, eyebrow, vid):
+    return f"""              - obj:
+                  align: TOP_LEFT
+                  x: {x}
+                  y: {y}
+                  width: {w}
+                  height: 96
+                  bg_color: 0x073642
+                  bg_opa: COVER
+                  radius: 16
+                  border_width: 0
+                  pad_left: 16
+                  pad_right: 16
+                  pad_top: 12
+                  pad_bottom: 12
+                  scrollable: false
+                  clickable: false
+                  widgets:
+                    - label:
+                        align: TOP_LEFT
+                        text: "{eyebrow}"
+                        text_color: 0x586e75
+                        text_font: figtree_16
+                    - label:
+                        id: {vid}
+                        align: BOTTOM_LEFT
+                        text: "--"
+                        text_color: 0xfdf6e3
+                        text_font: figtree_32
+"""
+
+def detail_page(idk, label, pwr):
+    tiles = (
+        tile(0,   452, 220, "NOZZLE",  f"d_{idk}_noz")
+        + tile(232, 452, 220, "BED",     f"d_{idk}_bed")
+        + tile(464, 452, 220, "CHAMBER", f"d_{idk}_cham")
+        + tile(0,   560, 336, "LAYER",   f"d_{idk}_layer")
+        + tile(348, 560, 336, "ENDS",    f"d_{idk}_end")
+    )
+    return f"""    - id: detail_{idk}
+      widgets:
+        - obj:
+            scrollable: false
+            width: 720
+            height: 720
+            bg_color: 0x002b36
+            bg_opa: COVER
+            pad_all: 18
+            border_width: 0
+            radius: 0
+            widgets:
+              - button:
+                  align: TOP_LEFT
+                  x: 0
+                  y: 0
+                  width: 120
+                  height: 52
+                  radius: 14
+                  bg_color: 0x073642
+                  border_width: 1
+                  border_color: 0x2a4048
+                  on_press:
+                    then:
+                      - lvgl.page.show:
+                          id: printer_page
+                          animation: MOVE_RIGHT
+                          time: 250ms
+                  widgets:
+                    - label:
+                        align: CENTER
+                        clickable: false
+                        text: "< Back"
+                        text_color: 0x93a1a1
+                        text_font: figtree_24
+              - label:
+                  align: TOP_LEFT
+                  x: 140
+                  y: 2
+                  text: "{label}"
+                  text_color: 0xeee8d5
+                  text_font: figtree_40
+              - label:
+                  id: d_{idk}_status
+                  align: TOP_LEFT
+                  x: 142
+                  y: 58
+                  text: "--"
+                  text_color: 0x586e75
+                  text_font: figtree_20
+                  bg_color: 0x073642
+                  bg_opa: COVER
+                  radius: 10
+                  pad_top: 3
+                  pad_bottom: 3
+                  pad_left: 10
+                  pad_right: 10
+              - switch:
+                  id: d_{idk}_sw
+                  align: TOP_RIGHT
+                  x: -8
+                  y: 6
+                  on_change:
+                    - if:
+                        condition:
+                          lambda: 'return x != id(ps_{idk}_pwr).state;'
+                        then:
+                          - homeassistant.service:
+                              service: input_boolean.toggle
+                              data:
+                                entity_id: {pwr}
+              - label:
+                  align: TOP_RIGHT
+                  x: -18
+                  y: 46
+                  text: "Power"
+                  text_color: 0x586e75
+                  text_font: figtree_20
+              - arc:
+                  id: d_{idk}_arc
+                  align: TOP_MID
+                  y: 96
+                  width: 300
+                  height: 300
+                  min_value: 0
+                  max_value: 100
+                  value: 0
+                  adjustable: false
+                  arc_width: 18
+                  arc_color: 0x073642
+                  indicator:
+                    arc_color: 0x2aa198
+                    arc_width: 18
+              - label:
+                  id: d_{idk}_pct
+                  align: TOP_MID
+                  y: 212
+                  text: "--"
+                  text_color: 0xfdf6e3
+                  text_font: figtree_48
+              - label:
+                  align: TOP_MID
+                  y: 268
+                  text: "COMPLETE"
+                  text_color: 0x586e75
+                  text_font: figtree_16
+              - label:
+                  id: d_{idk}_task
+                  align: TOP_MID
+                  y: 410
+                  width: 660
+                  text: ""
+                  text_color: 0x839496
+                  text_font: figtree_20
+                  text_align: CENTER
+                  long_mode: DOT
+{tiles}"""
+
+detail_pages = "".join(detail_page(idk, label, pwr) for (idk, label, pf, pwr) in printers)
 
 # ---------- sound page ----------
 rooms = [
@@ -456,86 +625,14 @@ sound_page = f"""    - id: printers_sound
                         text: ""
                         text_color: 0x839496
                         text_font: figtree_20
-{tb_prev}{tb_pp}{tb_next}                    - label:
-                        align: TOP_LEFT
-                        x: 404
-                        y: 128
-                        text: "MASTER"
-                        text_color: 0x586e75
-                        text_font: figtree_20
-                    - button:
-                        align: TOP_LEFT
-                        x: 492
-                        y: 120
-                        width: 46
-                        height: 40
-                        radius: 10
-                        bg_color: 0x002b36
-                        border_width: 1
-                        border_color: 0x586e75
-                        on_press:
-                          then:
-                            - homeassistant.service:
-                                service: media_player.volume_down
-                                data:
-                                  entity_id: media_player.home
-                        widgets:
-                          - label:
-                              align: CENTER
-                              clickable: false
-                              text: "-"
-                              text_color: 0x93a1a1
-                              text_font: figtree_24
-                    - label:
-                        id: snd_master
-                        align: TOP_LEFT
-                        x: 550
-                        y: 124
-                        text: "--"
-                        text_color: 0xfdf6e3
-                        text_font: figtree_24
-                    - button:
-                        align: TOP_LEFT
-                        x: 622
-                        y: 120
-                        width: 46
-                        height: 40
-                        radius: 10
-                        bg_color: 0x002b36
-                        border_width: 1
-                        border_color: 0x586e75
-                        on_press:
-                          then:
-                            - homeassistant.service:
-                                service: media_player.volume_up
-                                data:
-                                  entity_id: media_player.home
-                        widgets:
-                          - label:
-                              align: CENTER
-                              clickable: false
-                              text: "+"
-                              text_color: 0x93a1a1
-                              text_font: figtree_24
-              - label:
+{tb_prev}{tb_pp}{tb_next}              - label:
                   text: "PLAYER VOLUMES"
                   text_color: 0x586e75
                   text_font: figtree_20
 {room_rows}"""
 
 # ---------- sound sensors ----------
-snd_sensors = """  - platform: homeassistant
-    id: snd_home_vol
-    entity_id: media_player.home
-    attribute: volume_level
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: snd_master
-            text: !lambda |-
-              if (isnan(x)) return std::string("--");
-              char b[8]; snprintf(b, sizeof(b), "%d%%", (int)(x*100)); return std::string(b);
-"""
+snd_sensors = ""
 for (r, name, ent) in rooms:
     snd_sensors += f"""  - platform: homeassistant
     id: snd_{r}_vol
@@ -602,6 +699,24 @@ for (idk, label, pf, pwr) in printers:
     sensors += f"""  - platform: homeassistant
     id: ps_{idk}_noz
     entity_id: sensor.{pf}_nozzle_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_noz
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              int t = isnan(id(ps_{idk}_noz_t).state) ? 0 : (int)id(ps_{idk}_noz_t).state;
+              char b[24]; snprintf(b, sizeof(b), "%d° / %d°", (int)x, t); return std::string(b);
+  - platform: homeassistant
+    id: ps_{idk}_noz_t
+    entity_id: sensor.{pf}_nozzle_target_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_noz
+            text: !lambda |-
+              if (isnan(id(ps_{idk}_noz).state)) return std::string("--");
+              char b[24]; snprintf(b, sizeof(b), "%d° / %d°", (int)id(ps_{idk}_noz).state, (int)x); return std::string(b);
   - platform: homeassistant
     id: ps_{idk}_prog
     entity_id: sensor.{pf}_print_progress
@@ -610,8 +725,16 @@ for (idk, label, pf, pwr) in printers:
         - lvgl.bar.update:
             id: p_{idk}_bar
             value: !lambda 'return isnan(x) ? 0 : (int)x;'
+        - lvgl.arc.update:
+            id: d_{idk}_arc
+            value: !lambda 'return isnan(x) ? 0 : (int)x;'
         - lvgl.label.update:
             id: p_{idk}_pct
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              char b[8]; snprintf(b, sizeof(b), "%d%%", (int)x); return std::string(b);
+        - lvgl.label.update:
+            id: d_{idk}_pct
             text: !lambda |-
               if (isnan(x)) return std::string("--");
               char b[8]; snprintf(b, sizeof(b), "%d%%", (int)x); return std::string(b);
@@ -625,6 +748,42 @@ for (idk, label, pf, pwr) in printers:
             text: !lambda |-
               if (isnan(x) || isnan(id(ps_{idk}_noz).state)) return std::string("-- temps");
               char b[40]; snprintf(b, sizeof(b), "Bed %d°  Noz %d°", (int)x, (int)id(ps_{idk}_noz).state); return std::string(b);
+        - lvgl.label.update:
+            id: d_{idk}_bed
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              int t = isnan(id(ps_{idk}_bed_t).state) ? 0 : (int)id(ps_{idk}_bed_t).state;
+              char b[24]; snprintf(b, sizeof(b), "%d° / %d°", (int)x, t); return std::string(b);
+  - platform: homeassistant
+    id: ps_{idk}_bed_t
+    entity_id: sensor.{pf}_bed_target_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_bed
+            text: !lambda |-
+              if (isnan(id(ps_{idk}_bed).state)) return std::string("--");
+              char b[24]; snprintf(b, sizeof(b), "%d° / %d°", (int)id(ps_{idk}_bed).state, (int)x); return std::string(b);
+  - platform: homeassistant
+    id: ps_{idk}_cham
+    entity_id: sensor.{pf}_chamber_temperature
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_cham
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              char b[16]; snprintf(b, sizeof(b), "%d°", (int)x); return std::string(b);
+  - platform: homeassistant
+    id: ps_{idk}_layer
+    entity_id: sensor.{pf}_current_layer
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_layer
+            text: !lambda |-
+              if (isnan(x)) return std::string("--");
+              char b[16]; snprintf(b, sizeof(b), "%d", (int)x); return std::string(b);
 """
 
 # ---------- text sensors (stage -> status text + colour + accent; tray, remaining -> chips) ----------
@@ -639,11 +798,16 @@ for (idk, label, pf, pwr) in printers:
             id: p_{idk}_status
             text: !lambda |-
               std::string s = x; for (auto &c : s) c = toupper(c); return s;
+        - lvgl.label.update:
+            id: d_{idk}_status
+            text: !lambda |-
+              std::string s = x; for (auto &c : s) c = toupper(c); return s;
         - if:
             condition:
               lambda: 'return x == std::string("printing");'
             then:
               - lvgl.label.update: {{ id: p_{idk}_status, text_color: 0x859900 }}
+              - lvgl.label.update: {{ id: d_{idk}_status, text_color: 0x859900 }}
               - lvgl.widget.update: {{ id: p_{idk}_accent, bg_color: 0x859900 }}
             else:
               - if:
@@ -651,9 +815,11 @@ for (idk, label, pf, pwr) in printers:
                     lambda: 'return x == std::string("idle");'
                   then:
                     - lvgl.label.update: {{ id: p_{idk}_status, text_color: 0xb58900 }}
+                    - lvgl.label.update: {{ id: d_{idk}_status, text_color: 0xb58900 }}
                     - lvgl.widget.update: {{ id: p_{idk}_accent, bg_color: 0xb58900 }}
                   else:
                     - lvgl.label.update: {{ id: p_{idk}_status, text_color: 0x586e75 }}
+                    - lvgl.label.update: {{ id: d_{idk}_status, text_color: 0x586e75 }}
                     - lvgl.widget.update: {{ id: p_{idk}_accent, bg_color: 0x586e75 }}
   - platform: homeassistant
     id: pt_{idk}_fil
@@ -679,6 +845,21 @@ for (idk, label, pf, pwr) in printers:
         - lvgl.label.update:
             id: p_{idk}_sub
             text: !lambda 'return (x.empty() || x == std::string("unknown")) ? std::string("") : x;'
+        - lvgl.label.update:
+            id: d_{idk}_task
+            text: !lambda 'return (x.empty() || x == std::string("unknown")) ? std::string("") : x;'
+  - platform: homeassistant
+    id: pt_{idk}_end
+    entity_id: sensor.{pf}_end
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: d_{idk}_end
+            text: !lambda |-
+              std::string s = x;
+              if (s.empty() || s == std::string("unavailable") || s == std::string("Not Available")) return std::string("--");
+              auto p = s.find(", ");
+              return p == std::string::npos ? s : s.substr(p + 2);
 """
 
 # ---------- power binary sensors (input_boolean state -> switch) ----------
@@ -691,6 +872,10 @@ for (idk, label, pf, pwr) in printers:
       then:
         - lvgl.widget.update:
             id: p_{idk}_sw
+            state:
+              checked: !lambda 'return x;'
+        - lvgl.widget.update:
+            id: d_{idk}_sw
             state:
               checked: !lambda 'return x;'
 """
@@ -710,7 +895,7 @@ clock_iv = """  - interval: 10s
 
 # ---------- apply ----------
 assert "  pages:\n" in txt
-txt = txt.replace("  pages:\n", "  pages:\n" + printer_page + sound_page, 1)
+txt = txt.replace("  pages:\n", "  pages:\n" + printer_page + detail_pages + sound_page, 1)
 assert "\nsensor:\n" in txt
 txt = txt.replace("\nsensor:\n", "\nsensor:\n" + sensors + snd_sensors, 1)
 assert "\ntext_sensor:\n" in txt
@@ -778,6 +963,7 @@ with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
 
 print("OK lines:", txt.count("\n") + 1,
       "| printer_page:", "id: printer_page" in txt,
-      "| switches:", txt.count("id: p_hd2_sw"),
+      "| detail pages:", txt.count("    - id: detail_"),
+      "| arcs:", txt.count("id: d_") and (txt.count("_arc\n") ),
       "| glyphs fixed:", n_glyph,
-      "| vbtns left (want 2 master only):", txt.count("service: media_player.volume_up") + txt.count("service: media_player.volume_down") )
+      "| snd_master gone:", "id: snd_master" not in txt )
