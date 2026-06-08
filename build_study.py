@@ -310,7 +310,7 @@ def room_row(r, name, ent):
                         id: snd_{r}_bar
                         align: LEFT_MID
                         x: 190
-                        width: 250
+                        width: 400
                         min_value: 0
                         max_value: 100
                         value: 0
@@ -327,14 +327,14 @@ def room_row(r, name, ent):
                                       volume_level: "{{{{ vol }}}}"
                                     variables:
                                       vol: !lambda 'return x / 100.0;'
-{vbtn("-", "volume_down", ent, -150)}                    - label:
+                    - label:
                         id: snd_{r}_pct
                         align: RIGHT_MID
-                        x: -82
+                        x: -18
                         text: "--"
                         text_color: 0xfdf6e3
                         text_font: figtree_24
-{vbtn("+", "volume_up", ent, -18)}"""
+"""
 
 def tbtn(glyph, svc, x, big=False):
     sz = 52 if big else 48
@@ -763,6 +763,14 @@ NEW_OI = '''online_image:
         - lvgl.image.update:
             id: snd_art
             src: album_art_image'''
+# repair broken glyphs line (the `"` after `!` closes the YAML string early, so
+# figtree_28/gotham_42/gotham_54 only ever contained "!" -> digits/% render as tofu)
+GLYPH_BROKEN = '    glyphs: "!"#%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~ °"'
+GLYPH_FIXED  = '    glyphs: "!\\"#%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_abcdefghijklmnopqrstuvwxyz{|}~ °"'
+n_glyph = txt.count(GLYPH_BROKEN)
+txt = txt.replace(GLYPH_BROKEN, GLYPH_FIXED)
+assert n_glyph >= 1, "broken glyphs line not found (font fix did not apply)"
+
 txt = re.sub(r'online_image:.*?(\n## LVGL)', NEW_OI + r'\1', txt, count=1, flags=re.DOTALL)
 
 with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
@@ -770,4 +778,6 @@ with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
 
 print("OK lines:", txt.count("\n") + 1,
       "| printer_page:", "id: printer_page" in txt,
-      "| switches:", txt.count("id: p_hd2_sw") )
+      "| switches:", txt.count("id: p_hd2_sw"),
+      "| glyphs fixed:", n_glyph,
+      "| vbtns left (want 2 master only):", txt.count("service: media_player.volume_up") + txt.count("service: media_player.volume_down") )
