@@ -338,7 +338,7 @@ for (idk, label, pf, pwr) in printers:
     bsensors += f"""  - platform: homeassistant
     id: ps_{idk}_pwr
     entity_id: {pwr}
-    on_value:
+    on_state:
       then:
         - lvgl.widget.update:
             id: p_{idk}_sw
