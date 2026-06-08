@@ -421,16 +421,11 @@ sound_page = f"""    - id: printers_sound
                   pad_all: 0
                   scrollable: false
                   widgets:
-                    - obj:
+                    - image:
+                        id: snd_art
                         align: LEFT_MID
                         x: 16
-                        width: 144
-                        height: 144
-                        radius: 14
-                        bg_color: 0x268bd2
-                        bg_opa: COVER
-                        border_width: 0
-                        scrollable: false
+                        src: album_art_image
                     - label:
                         align: TOP_LEFT
                         x: 180
@@ -723,6 +718,9 @@ txt = txt.replace(
 # home nav -> printer_page
 txt = txt.replace("- lvgl.page.show: clock_page", "- lvgl.page.show: printer_page")
 txt = txt.replace("          id: clock_page", "          id: printer_page")
+# don't auto-jump back to the overview when music pauses/stops (stay put)
+txt = txt.replace("      - delay: 2000ms\n      - lvgl.page.show: printer_page\n",
+                  "      - delay: 2000ms\n", 1)
 
 # remove full-screen album-art overlay on play
 before = txt
@@ -732,8 +730,25 @@ txt = txt.replace(
     '              - lambda: "id(is_spotify_active) = true;"\n',
     '              - script.stop: debounce_not_playing\n', 1)
 assert txt != before, "album-art overlay trigger not found"
-txt = txt.replace("entity_id: sensor.spotify_album_art\n",
-                  "entity_id: sensor.spd_no_album_art\n", 1)
+# small album-art tile: source = media_player.home art; drawn on the Sound page
+# (small 150px image, NOT the old full-screen 720px takeover)
+txt = txt.replace("    entity_id: sensor.spotify_album_art\n",
+                  "    entity_id: media_player.home\n    attribute: entity_picture\n", 1)
+NEW_OI = '''online_image:
+  - id: album_art_image
+    url: "https://placehold.co/150x150/073642/268bd2.png"
+    format: JPEG
+    type: RGB565
+    byte_order: little_endian
+    resize: 150x150
+    buffer_size: 32768
+    update_interval: never
+    on_download_finished:
+      then:
+        - lvgl.image.update:
+            id: snd_art
+            src: album_art_image'''
+txt = re.sub(r'online_image:.*?(\n## LVGL)', NEW_OI + r'\1', txt, count=1, flags=re.DOTALL)
 
 with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
     fh.write(txt)
