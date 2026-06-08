@@ -171,6 +171,20 @@ txt = txt.replace("\ntext_sensor:\n", "\ntext_sensor:\n" + tsensors, 1)
 txt = txt.replace("- lvgl.page.show: clock_page", "- lvgl.page.show: printer_page")
 txt = txt.replace("          id: clock_page", "          id: printer_page")
 
+# --- Remove full-screen album-art overlay on music play ---
+# Killing the one direct show + flag-set; every other spotify_page show is gated
+# behind is_spotify_active, which now never becomes true -> dashboard stays up.
+before = txt
+txt = txt.replace(
+    '              - script.stop: debounce_not_playing\n'
+    '              - lvgl.page.show: spotify_page\n'
+    '              - lambda: "id(is_spotify_active) = true;"\n',
+    '              - script.stop: debounce_not_playing\n', 1)
+assert txt != before, "album-art overlay trigger not found"
+# Stop the album-art download entirely (point source at a non-existent entity)
+txt = txt.replace("entity_id: sensor.spotify_album_art\n",
+                  "entity_id: sensor.spd_no_album_art\n", 1)
+
 with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
     fh.write(txt)
 
