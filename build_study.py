@@ -43,7 +43,7 @@ def card(idk, label, ent):
                   border_color: 0x2a4048
                   pad_all: 0
                   clickable: true
-                  on_press:
+                  on_click:
                     then:
                       - lvgl.page.show:
                           id: detail_{idk}
@@ -683,13 +683,13 @@ nav_scripts = """  - id: nav_to_sound
     then:
       - lvgl.page.show:
           id: printers_sound
-          animation: MOVE_LEFT
+          animation: MOVE_TOP
           time: 250ms
   - id: nav_to_overview
     then:
       - lvgl.page.show:
           id: printer_page
-          animation: MOVE_RIGHT
+          animation: MOVE_BOTTOM
           time: 250ms
 """
 
@@ -908,16 +908,42 @@ txt = txt.replace("\ninterval:\n", "\ninterval:\n" + clock_iv, 1)
 # nav scripts + swipe between overview and sound
 assert "\nscript:\n" in txt
 txt = txt.replace("\nscript:\n", "\nscript:\n" + nav_scripts, 1)
-assert "          if (is_right) id(pulse_swipe_right).execute();\n" in txt
-txt = txt.replace(
-    "          if (is_right) id(pulse_swipe_right).execute();\n",
-    "          if (is_right) id(pulse_swipe_right).execute();\n"
-    "          if (is_left)  id(nav_to_sound).execute();\n"
-    "          if (is_right) id(nav_to_overview).execute();\n", 1)
+GESTURE_OLD = """          if (is_left)  id(pulse_swipe_left).execute();
+          if (is_right) id(pulse_swipe_right).execute();
+          if (is_up)    id(pulse_swipe_up).execute();
+          if (is_down)  id(pulse_swipe_down).execute();
+          // Controls → swipe down → back to album art
+          if (id(is_controls_active)) {
+            if (is_down) id(close_controls).execute();
+            return;
+          }
+          // Album art → swipe up → controls, left/right → tracks
+          if (id(is_spotify_active)) {
+            if (is_up)    id(open_controls).execute();
+            if (is_right) id(media_prev).execute();
+            if (is_left)  id(media_next).execute();
+            return;
+          }
+          // Clock page: swipe up opens controls
+          if (is_up) id(open_controls).execute();"""
+GESTURE_NEW = """          if (is_left)  id(pulse_swipe_left).execute();
+          if (is_right) id(pulse_swipe_right).execute();
+          if (is_up)    id(pulse_swipe_up).execute();
+          if (is_down)  id(pulse_swipe_down).execute();
+          // Study dashboard nav: swipe up -> Music, swipe down -> Printers
+          if (is_up)   id(nav_to_sound).execute();
+          if (is_down) id(nav_to_overview).execute();"""
+assert GESTURE_OLD in txt, "gesture tail not found (swipe nav rewrite failed)"
+txt = txt.replace(GESTURE_OLD, GESTURE_NEW, 1)
 
-# home nav -> printer_page
+# home nav -> printer_page (also neutralise every path to the bedroom pages so
+# clock/spotify/controls can never surface — they stay defined but unreachable)
 txt = txt.replace("- lvgl.page.show: clock_page", "- lvgl.page.show: printer_page")
 txt = txt.replace("          id: clock_page", "          id: printer_page")
+txt = txt.replace("- lvgl.page.show: spotify_page", "- lvgl.page.show: printer_page")
+txt = txt.replace("          id: spotify_page", "          id: printer_page")
+txt = txt.replace("- lvgl.page.show: controls_page", "- lvgl.page.show: printer_page")
+txt = txt.replace("          id: controls_page", "          id: printer_page")
 # don't auto-jump back to the overview when music pauses/stops (stay put)
 txt = txt.replace("      - delay: 2000ms\n      - lvgl.page.show: printer_page\n",
                   "      - delay: 2000ms\n", 1)
