@@ -936,14 +936,9 @@ GESTURE_NEW = """          if (is_left)  id(pulse_swipe_left).execute();
 assert GESTURE_OLD in txt, "gesture tail not found (swipe nav rewrite failed)"
 txt = txt.replace(GESTURE_OLD, GESTURE_NEW, 1)
 
-# home nav -> printer_page (also neutralise every path to the bedroom pages so
-# clock/spotify/controls can never surface — they stay defined but unreachable)
+# home nav -> printer_page
 txt = txt.replace("- lvgl.page.show: clock_page", "- lvgl.page.show: printer_page")
 txt = txt.replace("          id: clock_page", "          id: printer_page")
-txt = txt.replace("- lvgl.page.show: spotify_page", "- lvgl.page.show: printer_page")
-txt = txt.replace("          id: spotify_page", "          id: printer_page")
-txt = txt.replace("- lvgl.page.show: controls_page", "- lvgl.page.show: printer_page")
-txt = txt.replace("          id: controls_page", "          id: printer_page")
 # don't auto-jump back to the overview when music pauses/stops (stay put)
 txt = txt.replace("      - delay: 2000ms\n      - lvgl.page.show: printer_page\n",
                   "      - delay: 2000ms\n", 1)
@@ -956,6 +951,12 @@ txt = txt.replace(
     '              - lambda: "id(is_spotify_active) = true;"\n',
     '              - script.stop: debounce_not_playing\n', 1)
 assert txt != before, "album-art overlay trigger not found"
+# neutralise every remaining path to the bedroom pages so clock/spotify/controls
+# can never surface — they stay defined but unreachable (run AFTER overlay removal)
+txt = txt.replace("- lvgl.page.show: spotify_page", "- lvgl.page.show: printer_page")
+txt = txt.replace("          id: spotify_page", "          id: printer_page")
+txt = txt.replace("- lvgl.page.show: controls_page", "- lvgl.page.show: printer_page")
+txt = txt.replace("          id: controls_page", "          id: printer_page")
 # small album-art tile: source = media_player.home art; drawn on the Sound page
 # (small 150px image, NOT the old full-screen 720px takeover)
 txt = txt.replace("    entity_id: sensor.spotify_album_art\n",
