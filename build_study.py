@@ -458,52 +458,93 @@ def vbtn(sym, svc, ent, x, font="figtree_24"):
                               text_font: {font}
 """
 
-def room_row(r, name, ent):
-    return f"""              - obj:
-                  width: 684
-                  height: 52
-                  bg_color: 0x073642
-                  bg_opa: COVER
-                  radius: 14
-                  border_width: 0
-                  pad_all: 0
+# ---- blessed "optimistic glowing bead" volume slider (BM spec, Shane-approved) ----
+# Reuses the bedroom base's shared `vol_fill_grad` gradient + `vol_last_call` throttle.
+# Study-scoped KEY (bal/bed/kit/bath/liv) avoids id collisions with the bedroom's
+# full-name vol_slider_balcony etc. Raw template -> replace KEY/ENTITY/NAME verbatim.
+VROW_TMPL = '''              - obj:
+                  id: vrow_KEY
                   scrollable: false
+                  width: 684
+                  height: 42
+                  radius: 12
+                  bg_color: 0x073642
+                  border_width: 1
+                  border_color: 0x586e75
+                  pad_all: 0
+                  clickable: false
                   widgets:
                     - label:
                         align: LEFT_MID
-                        x: 18
-                        text: "{name}"
-                        text_color: 0xeee8d5
-                        text_font: figtree_24
+                        x: 16
+                        text: "NAME"
+                        text_color: 0xEEE8D5
+                        text_font: figtree_20
+                        border_width: 0
+                    - label:
+                        id: vval_KEY
+                        align: RIGHT_MID
+                        x: -16
+                        text: "--"
+                        text_color: 0xEEE8D5
+                        text_font: figtree_20
+                        border_width: 0
                     - slider:
-                        id: snd_{r}_bar
+                        id: vol_slider_KEY
                         align: LEFT_MID
-                        x: 190
-                        width: 400
+                        x: 150
+                        width: 440
+                        height: 10
                         min_value: 0
                         max_value: 100
-                        value: 0
+                        bg_color: 0x000000
+                        bg_opa: 40%
+                        radius: 6
+                        indicator:
+                          bg_grad: vol_fill_grad
+                          radius: 6
+                        knob:
+                          bg_color: 0xFDF6E3
+                          radius: 9
+                          pad_all: 3
+                          shadow_color: 0x2AA198
+                          shadow_opa: 75%
+                          shadow_width: 12
+                          shadow_spread: 2
                         on_value:
-                          - if:
-                              condition:
-                                lambda: 'return id(snd_{r}_vol).has_state() && abs((int)x - (int)(id(snd_{r}_vol).state*100.0f)) > 3;'
-                              then:
-                                - homeassistant.service:
-                                    service: media_player.volume_set
-                                    data:
-                                      entity_id: {ent}
-                                    data_template:
-                                      volume_level: "{{{{ vol }}}}"
-                                    variables:
-                                      vol: !lambda 'return x / 100.0;'
-                    - label:
-                        id: snd_{r}_pct
-                        align: RIGHT_MID
-                        x: -18
-                        text: "--"
-                        text_color: 0xfdf6e3
-                        text_font: figtree_24
-"""
+                          then:
+                            - lvgl.label.update:
+                                id: vval_KEY
+                                text: !lambda 'char b[8]; snprintf(b, sizeof(b), "%.0f%%", x); return std::string(b);'
+                            - lambda: |-
+                                id(vol_pend_KEY) = x;
+                                id(vol_pend_t_KEY) = millis();
+                            - if:
+                                condition:
+                                  lambda: 'return millis() - id(vol_last_call) > 180;'
+                                then:
+                                  - lambda: 'id(vol_last_call) = millis();'
+                                  - homeassistant.service:
+                                      service: media_player.volume_set
+                                      data:
+                                        entity_id: media_player.ENTITY
+                                        volume_level: !lambda 'char b[8]; snprintf(b, sizeof(b), "%.2f", x / 100.0f); return std::string(b);'
+                        on_release:
+                          then:
+                            - lambda: |-
+                                id(vol_pend_KEY) = x;
+                                id(vol_pend_t_KEY) = millis();
+                                id(vol_last_call) = millis();
+                            - homeassistant.service:
+                                service: media_player.volume_set
+                                data:
+                                  entity_id: media_player.ENTITY
+                                  volume_level: !lambda 'char b[8]; snprintf(b, sizeof(b), "%.2f", x / 100.0f); return std::string(b);'
+'''
+
+def room_row(r, name, ent):
+    entity = ent.split("media_player.")[-1]
+    return VROW_TMPL.replace("KEY", r).replace("ENTITY", entity).replace("NAME", name)
 
 def tbtn(glyph, svc, x, big=False):
     sz = 52 if big else 48
@@ -632,23 +673,84 @@ sound_page = f"""    - id: printers_sound
 {room_rows}"""
 
 # ---------- sound sensors ----------
-snd_sensors = ""
-for (r, name, ent) in rooms:
-    snd_sensors += f"""  - platform: homeassistant
-    id: snd_{r}_vol
-    entity_id: {ent}
+# Blessed optimistic-guard volume sync (BM spec). Reuses per-room pend globals
+# (vol_pend_KEY/vol_pend_t_KEY) added into globals:. Raw template, verbatim.
+VOL_SYNC_TMPL = '''  - platform: homeassistant
+    id: vol_lvl_KEY
+    entity_id: media_player.ENTITY
     attribute: volume_level
+    internal: true
     on_value:
       then:
-        - lvgl.slider.update:
-            id: snd_{r}_bar
-            value: !lambda 'return isnan(x) ? 0 : (int)(x*100);'
-        - lvgl.label.update:
-            id: snd_{r}_pct
-            text: !lambda |-
-              if (isnan(x)) return std::string("--");
-              char b[8]; snprintf(b, sizeof(b), "%d%%", (int)(x*100)); return std::string(b);
+        - if:
+            condition:
+              lambda: |-
+                if (isnan(x)) return false;
+                if (lv_obj_has_state(id(vol_slider_KEY), LV_STATE_PRESSED)) return false;
+                if (id(vol_pend_KEY) >= 0) {
+                  if (millis() - id(vol_pend_t_KEY) > 2500) {
+                    id(vol_pend_KEY) = -1;
+                  } else if (fabsf(x * 100.0f - id(vol_pend_KEY)) < 2.0f) {
+                    id(vol_pend_KEY) = -1;
+                  } else {
+                    return false;
+                  }
+                }
+                return true;
+            then:
+              - lvgl.slider.update:
+                  id: vol_slider_KEY
+                  value: !lambda 'return x * 100.0f;'
+              - if:
+                  condition:
+                    binary_sensor.is_off: vol_muted_KEY
+                  then:
+                    - lvgl.label.update:
+                        id: vval_KEY
+                        text: !lambda 'char b[8]; snprintf(b, sizeof(b), "%.0f%%", x * 100.0f); return std::string(b);'
+'''
+snd_sensors = "".join(
+    VOL_SYNC_TMPL.replace("KEY", r).replace("ENTITY", ent.split("media_player.")[-1])
+    for (r, name, ent) in rooms)
+
+# per-room mute sensors (value column + row dim) -> inserted into binary_sensor:
+VOL_MUTE_TMPL = '''  - platform: homeassistant
+    id: vol_muted_KEY
+    entity_id: media_player.ENTITY
+    attribute: is_volume_muted
+    internal: true
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: 'return x;'
+            then:
+              - lvgl.widget.update: { id: vrow_KEY, opa: 45% }
+              - lvgl.label.update:
+                  id: vval_KEY
+                  text: "Mute"
+                  text_color: 0x93A1A1
+            else:
+              - lvgl.widget.update: { id: vrow_KEY, opa: 100% }
+              - lvgl.label.update:
+                  id: vval_KEY
+                  text_color: 0xEEE8D5
+                  text: !lambda |-
+                    float v = id(vol_lvl_KEY).state;
+                    if (isnan(v)) return std::string("--");
+                    char b[8];
+                    snprintf(b, sizeof(b), "%.0f%%", v * 100.0f);
+                    return std::string(b);
+'''
+vol_mute_sensors = "".join(
+    VOL_MUTE_TMPL.replace("KEY", r).replace("ENTITY", ent.split("media_player.")[-1])
+    for (r, name, ent) in rooms)
+
+# per-room throttle/pend globals (vol_last_call already exists in the bedroom base)
+VOL_GLOBALS_TMPL = """  - { id: vol_pend_KEY,   type: float,    restore_value: no, initial_value: '-1' }
+  - { id: vol_pend_t_KEY, type: uint32_t, restore_value: no, initial_value: '0' }
 """
+vol_globals = "".join(VOL_GLOBALS_TMPL.replace("KEY", r) for (r, name, ent) in rooms)
 
 snd_tsensors = """  - platform: homeassistant
     id: snd_title_s
@@ -901,7 +1003,10 @@ txt = txt.replace("\nsensor:\n", "\nsensor:\n" + sensors + snd_sensors, 1)
 assert "\ntext_sensor:\n" in txt
 txt = txt.replace("\ntext_sensor:\n", "\ntext_sensor:\n" + tsensors + snd_tsensors, 1)
 assert "\nbinary_sensor:\n" in txt
-txt = txt.replace("\nbinary_sensor:\n", "\nbinary_sensor:\n" + bsensors, 1)
+txt = txt.replace("\nbinary_sensor:\n", "\nbinary_sensor:\n" + bsensors + vol_mute_sensors, 1)
+# per-room volume pend/throttle globals (reuses existing vol_last_call + vol_fill_grad)
+assert "\nglobals:\n" in txt
+txt = txt.replace("\nglobals:\n", "\nglobals:\n" + vol_globals, 1)
 # add clock updater into the existing interval: section
 assert "\ninterval:\n" in txt
 txt = txt.replace("\ninterval:\n", "\ninterval:\n" + clock_iv, 1)
@@ -991,6 +1096,9 @@ with io.open(F, "w", encoding="utf-8", newline="\n") as fh:
 print("OK lines:", txt.count("\n") + 1,
       "| printer_page:", "id: printer_page" in txt,
       "| detail pages:", txt.count("    - id: detail_"),
-      "| arcs:", txt.count("id: d_") and (txt.count("_arc\n") ),
-      "| glyphs fixed:", n_glyph,
-      "| snd_master gone:", "id: snd_master" not in txt )
+      "| vol sliders:", txt.count("id: vol_slider_bal") + txt.count("id: vol_slider_bed")
+                        + txt.count("id: vol_slider_kit") + txt.count("id: vol_slider_bath")
+                        + txt.count("id: vol_slider_liv"),
+      "| pend globals:", txt.count("id: vol_pend_bal") + txt.count("id: vol_pend_t_bal"),
+      "| reuse vol_fill_grad (want 1 def):", txt.count("    - id: vol_fill_grad"),
+      "| glyphs fixed:", n_glyph )
