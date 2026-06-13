@@ -472,7 +472,6 @@ VROW_TMPL = '''              - obj:
                   border_width: 1
                   border_color: 0x586e75
                   pad_all: 0
-                  clickable: false
                   widgets:
                     - label:
                         align: LEFT_MID
